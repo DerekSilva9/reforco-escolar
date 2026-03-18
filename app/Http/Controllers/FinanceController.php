@@ -53,6 +53,7 @@ class FinanceController extends Controller
                 'due_date' => $dueDate,
                 'payment' => $payment,
                 'status' => $computedStatus,
+                'amount' => $student->fee,
             ];
         });
 
