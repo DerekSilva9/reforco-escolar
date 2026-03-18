@@ -1,19 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-slate-900 leading-tight">
+        <h2 class="font-semibold text-xl text-slate-900 dark:text-slate-50 leading-tight">
             Nova turma
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100">
-                <div class="p-6 text-slate-900">
+            <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100 dark:border-slate-700">
+                <div class="p-6 text-slate-900 dark:text-slate-50">
                     <form method="POST" action="{{ route('turmas.store') }}" class="space-y-6">
                         @csrf
 
                         @if (auth()->user()?->isAdmin() && $teachers->isEmpty())
-                            <div class="bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 rounded-md">
+                            <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 px-4 py-3 rounded-md">
                                 Nenhum professor cadastrado ainda. Cadastre um professor em
                                 <a class="underline font-semibold" href="{{ route('admin.users.create') }}">Usuários</a>
                                 e volte aqui para criar a turma.

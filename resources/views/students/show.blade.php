@@ -2,17 +2,16 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h2 class="font-semibold text-xl text-slate-900 leading-tight">
-                    Perfil do aluno
-                </h2>
-                <div class="text-sm text-slate-600 mt-1">
-                    {{ $student->name }}
+                    <h2 class="font-semibold text-xl text-slate-900 dark:text-slate-50 leading-tight">
+                        Perfil do aluno
+                    </h2>
+                    <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">
                 </div>
             </div>
 
             <div class="flex flex-wrap gap-2">
                 @if (auth()->user()?->isAdmin())
-                    <a href="{{ route('alunos.edit', $student) }}" class="inline-flex items-center px-4 py-2 bg-blue-900 rounded-md text-amber-50 hover:bg-blue-800 shadow-sm">
+                    <a href="{{ route('alunos.edit', $student) }}" class="inline-flex items-center px-4 py-2 bg-blue-900 dark:bg-blue-800 rounded-md text-amber-50 hover:bg-blue-800 dark:hover:bg-blue-700 shadow-sm">
                         Editar
                     </a>
 
@@ -22,7 +21,7 @@
                         <x-danger-button type="submit">Excluir</x-danger-button>
                     </form>
                 @endif
-                <a href="{{ route('alunos.index') }}" class="inline-flex items-center px-4 py-2 bg-amber-50 border border-blue-200 rounded-md text-blue-950 hover:bg-white shadow-sm">
+                <a href="{{ route('alunos.index') }}" class="inline-flex items-center px-4 py-2 bg-amber-50 dark:bg-slate-700 border border-blue-200 dark:border-slate-600 rounded-md text-blue-950 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 shadow-sm">
                     Voltar
                 </a>
             </div>
@@ -33,12 +32,12 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 space-y-6">
-                    <div class="bg-white/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100">
-                        <div class="p-6 text-slate-900">
+                    <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100 dark:border-slate-700">
+                        <div class="p-6 text-slate-900 dark:text-slate-50">
                             <div class="flex items-center justify-between gap-4 mb-4">
-                                <div class="font-semibold text-slate-900">Dados</div>
+                                <div class="font-semibold text-slate-900 dark:text-slate-50">Dados</div>
                                 @if ($student->team)
-                                    <a href="{{ route('presenca.index', ['team_id' => $student->team_id, 'date' => now()->toDateString()]) }}" class="text-sm text-slate-700 hover:text-blue-950">
+                                    <a href="{{ route('presenca.index', ['team_id' => $student->team_id, 'date' => now()->toDateString()]) }}" class="text-sm text-slate-700 dark:text-slate-300 hover:text-blue-950 dark:hover:text-slate-100">
                                         Marcar presença (turma)
                                     </a>
                                 @endif
@@ -46,21 +45,21 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div>
-                                    <div class="text-slate-600">Responsável</div>
+                                    <div class="text-slate-600 dark:text-slate-400">Responsável</div>
                                     <div class="font-medium">{{ $student->responsavel?->name ?? $student->parent_name ?? '-' }}</div>
                                 </div>
                                 <div>
-                                    <div class="text-slate-600">Telefone</div>
+                                    <div class="text-slate-600 dark:text-slate-400">Telefone</div>
                                     <div class="font-medium">{{ $student->responsavel?->phone ?? $student->phone ?? '-' }}</div>
                                 </div>
                                 <div>
-                                    <div class="text-slate-600">Nascimento</div>
+                                    <div class="text-slate-600 dark:text-slate-400">Nascimento</div>
                                     <div class="font-medium">
                                         {{ $student->birth_date?->format('d/m/Y') ?? '-' }}
                                     </div>
                                 </div>
                                 <div>
-                                    <div class="text-slate-600">Turma</div>
+                                    <div class="text-slate-600 dark:text-slate-400">Turma</div>
                                     <div class="font-medium">{{ $student->team?->name ?? '-' }}</div>
                                 </div>
                                 <div>
@@ -85,10 +84,10 @@
                         </div>
                     </div>
 
-                    <div class="bg-white/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100">
-                        <div class="p-6 text-slate-900">
+                    <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100 dark:border-slate-700">
+                        <div class="p-6 text-slate-900 dark:text-slate-50">
                             <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-                                <div class="font-semibold text-slate-900">Financeiro</div>
+                                <div class="font-semibold text-slate-900 dark:text-slate-50">Financeiro</div>
 
                                 @if (auth()->user()?->isAdmin())
                                     @if ($currentMonthPayment)
@@ -107,7 +106,7 @@
                             </div>
 
                             @if ($student->payments->isEmpty())
-                                <div class="text-slate-600 text-sm">
+                                <div class="text-slate-600 dark:text-slate-400 text-sm">
                                     Nenhum pagamento registrado ainda.
                                 </div>
                             @else
@@ -137,19 +136,19 @@
                         </div>
                     </div>
 
-                    <div class="bg-white/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100">
-                        <div class="p-6 text-slate-900">
-                            <div class="font-semibold text-slate-900 mb-4">Presença</div>
+                    <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100 dark:border-slate-700">
+                        <div class="p-6 text-slate-900 dark:text-slate-50">
+                            <div class="font-semibold text-slate-900 dark:text-slate-50 mb-4">Presença</div>
 
                             @if ($student->attendances->isEmpty())
-                                <div class="text-slate-600 text-sm">
+                                <div class="text-slate-600 dark:text-slate-400 text-sm">
                                     Nenhuma presença registrada ainda.
                                 </div>
                             @else
                                 <div class="overflow-x-auto">
                                     <table class="min-w-full text-sm">
                                         <thead>
-                                            <tr class="text-left text-slate-600 border-b border-blue-100">
+                                            <tr class="text-left text-slate-600 dark:text-slate-400 border-b border-blue-100 dark:border-slate-700">
                                                 <th class="py-2 pe-4">Data</th>
                                                 <th class="py-2 pe-4">Status</th>
                                                 <th class="py-2">Obs</th>
@@ -157,7 +156,7 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($student->attendances as $attendance)
-                                                <tr class="border-b border-blue-50 last:border-0">
+                                                <tr class="border-b border-blue-50 dark:border-slate-700 last:border-0">
                                                     <td class="py-3 pe-4 font-medium">{{ $attendance->date?->format('d/m/Y') }}</td>
                                                     <td class="py-3 pe-4">
                                                         @if ($attendance->present)
@@ -178,18 +177,18 @@
                 </div>
 
                 <div class="space-y-6">
-                    <div class="bg-white/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100">
-                        <div class="p-6 text-slate-900">
-                            <div class="font-semibold text-slate-900 mb-4">Observações</div>
+                    <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100 dark:border-slate-700">
+                        <div class="p-6 text-slate-900 dark:text-slate-50">
+                            <div class="font-semibold text-slate-900 dark:text-slate-50 mb-4">Observações</div>
 
                             <form method="POST" action="{{ route('alunos.notes', $student) }}" class="space-y-3">
                                 @csrf
-                                <textarea name="notes" rows="8" class="block w-full border-blue-200 focus:border-blue-700 focus:ring-blue-700 rounded-md shadow-sm bg-white" placeholder="Observações rápidas sobre o aluno...">{{ old('notes', $student->notes) }}</textarea>
+                                <textarea name="notes" rows="8" class="block w-full border-blue-200 dark:border-slate-600 focus:border-blue-700 dark:focus:border-blue-500 focus:ring-blue-700 dark:focus:ring-blue-500 rounded-md shadow-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 placeholder:text-slate-400 dark:placeholder:text-slate-500" placeholder="Observações rápidas sobre o aluno...">{{ old('notes', $student->notes) }}</textarea>
                                 <x-input-error class="mt-2" :messages="$errors->get('notes')" />
 
                                 <div class="flex items-center justify-between gap-3">
                                     <x-primary-button>Salvar</x-primary-button>
-                                    <div class="text-xs text-slate-500">
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">
                                         Salva uma observação geral (não por dia).
                                     </div>
                                 </div>

@@ -2,15 +2,15 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h2 class="font-semibold text-xl text-slate-900 leading-tight">
+                <h2 class="font-semibold text-xl text-slate-900 dark:text-slate-50 leading-tight">
                     Novo usuário
                 </h2>
-                <div class="text-sm text-slate-600 mt-1">
+                <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">
                     Somente admin pode criar professores e responsáveis.
                 </div>
             </div>
 
-            <a href="{{ route('admin.users.index') }}" class="text-sm text-slate-700 hover:text-blue-950">
+            <a href="{{ route('admin.users.index') }}" class="text-sm text-slate-700 dark:text-slate-300 hover:text-blue-950 dark:hover:text-slate-50">
                 Voltar
             </a>
         </div>
@@ -18,14 +18,14 @@
 
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100">
-                <div class="p-6 text-slate-900">
+            <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100 dark:border-slate-700">
+                <div class="p-6 text-slate-900 dark:text-slate-50">
                     <form method="POST" action="{{ route('admin.users.store') }}" class="space-y-6">
                         @csrf
 
                         <div>
                             <x-input-label for="role" value="Cargo" />
-                            <select id="role" name="role" class="mt-1 block w-full border-blue-200 focus:border-blue-700 focus:ring-blue-700 rounded-md shadow-sm bg-white" required>
+                            <select id="role" name="role" class="mt-1 block w-full border-blue-200 dark:border-slate-600 focus:border-blue-700 dark:focus:border-blue-500 focus:ring-blue-700 dark:focus:ring-blue-500 rounded-md shadow-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50" required>
                                 <option value="professor" @selected(old('role', 'professor') === 'professor')>Professor</option>
                                 <option value="responsavel" @selected(old('role') === 'responsavel')>Responsável</option>
                             </select>
@@ -47,7 +47,7 @@
                         <div>
                             <x-input-label for="phone" value="Telefone (WhatsApp)" />
                             <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone')" placeholder="(11) 99999-9999" />
-                            <div class="mt-1 text-xs text-slate-500">
+                            <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
                                 Obrigatório para responsável.
                             </div>
                             <x-input-error class="mt-2" :messages="$errors->get('phone')" />
@@ -68,7 +68,7 @@
 
                         <div class="flex items-center gap-3">
                             <x-primary-button>Criar</x-primary-button>
-                            <a href="{{ route('admin.users.index') }}" class="text-sm text-slate-700 hover:text-blue-950">Cancelar</a>
+                            <a href="{{ route('admin.users.index') }}" class="text-sm text-slate-700 dark:text-slate-300 hover:text-blue-950 dark:hover:text-slate-50">Cancelar</a>
                         </div>
                     </form>
                 </div>
