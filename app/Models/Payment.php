@@ -7,16 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['student_id', 'date', 'present', 'obs'])]
-class Attendance extends Model
+#[Fillable(['student_id', 'year', 'month', 'amount', 'paid_at', 'method', 'obs'])]
+class Payment extends Model
 {
     use HasFactory;
 
     protected function casts(): array
     {
         return [
-            'date' => 'date',
-            'present' => 'boolean',
+            'amount' => 'decimal:2',
+            'paid_at' => 'datetime',
         ];
     }
 
@@ -25,3 +25,4 @@ class Attendance extends Model
         return $this->belongsTo(Student::class);
     }
 }
+
