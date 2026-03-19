@@ -35,7 +35,7 @@
                         @if (auth()->user()?->isAdmin())
                             <div>
                                 <x-input-label for="user_id" value="Professor" />
-                                <select id="user_id" name="user_id" class="mt-1 block w-full border-blue-200 focus:border-blue-700 focus:ring-blue-700 rounded-md shadow-sm bg-white" required @disabled($teachers->isEmpty())>
+                                <select id="user_id" name="user_id" class="mt-1 block w-full border-blue-200 dark:border-slate-600 focus:border-blue-700 dark:focus:border-blue-500 focus:ring-blue-700 dark:focus:ring-blue-500 rounded-md shadow-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50" required @disabled($teachers->isEmpty())>
                                     <option value="">Selecione...</option>
                                     @foreach ($teachers as $teacher)
                                         <option value="{{ $teacher->id }}" @selected((string) old('user_id') === (string) $teacher->id)>

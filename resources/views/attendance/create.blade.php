@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 dark:text-slate-50 leading-tight">
+                <h2 class="font-semibold text-xl text-slate-900 dark:text-slate-50 leading-tight">
                     Chamada
                 </h2>
                 <div class="text-sm text-gray-600 dark:text-slate-400 mt-1">
@@ -10,7 +10,7 @@
                 </div>
             </div>
 
-            <a href="{{ route('teams.index') }}" class="text-sm text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200">
+            <a href="{{ route('teams.index') }}" class="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200">
                 Voltar para turmas
             </a>
         </div>
@@ -29,7 +29,7 @@
 
                         <x-primary-button>Ir</x-primary-button>
 
-                        <div class="text-sm text-gray-500 dark:text-slate-400">
+                        <div class="text-sm text-slate-500 dark:text-slate-400">
                             Dica: por padrão, todo mundo começa como "presente".
                         </div>
                     </form>
@@ -37,17 +37,17 @@
             </div>
 
             <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg border border-slate-200 dark:border-slate-700">
-                <div class="p-6 text-gray-900 dark:text-slate-50">
+                <div class="p-6 text-slate-900 dark:text-slate-50">
                     @if ($students->isEmpty())
-                        <div class="text-gray-600 dark:text-slate-400">
+                        <div class="text-slate-600 dark:text-slate-400">
                             Nenhum aluno ativo nessa turma.
                         </div>
                     @else
                         <div class="flex flex-wrap gap-2 mb-4">
-                            <button type="button" id="check-all" class="inline-flex items-center px-3 py-1.5 bg-gray-100 dark:bg-slate-700 rounded-md text-gray-800 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-600">
+                            <button type="button" id="check-all" class="inline-flex items-center px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-md text-slate-900 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600">
                                 Marcar todos presentes
                             </button>
-                            <button type="button" id="uncheck-all" class="inline-flex items-center px-3 py-1.5 bg-gray-100 dark:bg-slate-700 rounded-md text-gray-800 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-600">
+                            <button type="button" id="uncheck-all" class="inline-flex items-center px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-md text-slate-900 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600">
                                 Desmarcar todos
                             </button>
                         </div>
@@ -59,7 +59,7 @@
                             <div class="overflow-x-auto">
                                 <table class="min-w-full text-sm">
                                     <thead>
-                                        <tr class="text-left text-gray-600 dark:text-slate-400 border-b dark:border-slate-700">
+                                        <tr class="text-left text-slate-600 dark:text-slate-400 border-b dark:border-slate-700">
                                             <th class="py-2 pe-4">Aluno</th>
                                             <th class="py-2 pe-4">Presente</th>
                                             <th class="py-2">Observação</th>

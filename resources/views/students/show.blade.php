@@ -21,7 +21,7 @@
                         <x-danger-button type="submit">Excluir</x-danger-button>
                     </form>
                 @endif
-                <a href="{{ route('alunos.index') }}" class="inline-flex items-center px-4 py-2 bg-amber-50 dark:bg-slate-700 border border-blue-200 dark:border-slate-600 rounded-md text-blue-950 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 shadow-sm">
+                <a href="{{ route('alunos.index') }}" class="inline-flex items-center px-4 py-2 bg-amber-50 dark:bg-slate-700 border border-blue-200 dark:border-slate-600 rounded-md text-blue-950 dark:text-slate-200 hover:bg-amber-100 dark:hover:bg-slate-600 shadow-sm">
                     Voltar
                 </a>
             </div>
@@ -63,20 +63,20 @@
                                     <div class="font-medium">{{ $student->team?->name ?? '-' }}</div>
                                 </div>
                                 <div>
-                                    <div class="text-slate-600">Mensalidade</div>
+                                    <div class="text-slate-600 dark:text-slate-400">Mensalidade</div>
                                     <div class="font-medium">R$ {{ number_format((float) $student->fee, 2, ',', '.') }}</div>
                                 </div>
                                 <div>
-                                    <div class="text-slate-600">Vencimento</div>
+                                    <div class="text-slate-600 dark:text-slate-400">Vencimento</div>
                                     <div class="font-medium">Dia {{ $student->due_day }}</div>
                                 </div>
                                 <div>
                                     <div class="text-slate-600">Status</div>
                                     <div class="font-medium">
                                         @if ($student->active)
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900">Ativo</span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-300">Ativo</span>
                                         @else
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-800">Inativo</span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-300">Inativo</span>
                                         @endif
                                     </div>
                                 </div>
@@ -91,7 +91,7 @@
 
                                 @if (auth()->user()?->isAdmin())
                                     @if ($currentMonthPayment)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-300">
                                             Pago este mês
                                         </span>
                                     @else
@@ -113,7 +113,7 @@
                                 <div class="overflow-x-auto">
                                     <table class="min-w-full text-sm">
                                         <thead>
-                                            <tr class="text-left text-slate-600 border-b border-blue-100">
+                                            <tr class="text-left text-slate-600 dark:text-slate-400 border-b border-blue-100 dark:border-slate-700">
                                                 <th class="py-2 pe-4">Competência</th>
                                                 <th class="py-2 pe-4">Valor</th>
                                                 <th class="py-2">Pago em</th>
@@ -160,9 +160,9 @@
                                                     <td class="py-3 pe-4 font-medium">{{ $attendance->date?->format('d/m/Y') }}</td>
                                                     <td class="py-3 pe-4">
                                                         @if ($attendance->present)
-                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900">Presente</span>
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-300">Presente</span>
                                                         @else
-                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-900">Faltou</span>
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-100 dark:bg-rose-900/40 text-rose-900 dark:text-rose-300">Faltou</span>
                                                         @endif
                                                     </td>
                                                     <td class="py-3">{{ $attendance->obs ?? '-' }}</td>

@@ -1,58 +1,43 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 Sistema de Gestão - Reforço Escolar
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 
-## About Laravel
+Sistema robusto para gestão de centros de reforço escolar, focado em facilitar o dia a dia de administradores e professores. O sistema prioriza a **funcionalidade direta** e a **acessibilidade**, com uma interface limpa, fontes legíveis e botões de ação rápida.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Funcionalidades Principais
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🏢 Painel Administrativo (Admin)
+- **Dashboard Estratégico:** Visualização em tempo real do total de alunos, pendências financeiras e aulas agendadas para o dia.
+- **Gestão de Turmas:** Controle total sobre horários, disciplinas e atribuição de professores.
+- **Controle de Usuários:** Gerenciamento de acessos para administradores e corpo docente.
+- **Fluxo Financeiro:** Monitoramento de pagamentos recentes e lista de inadimplência automatizada.
 
-## Learning Laravel
+### 👨‍🏫 Painel do Professor
+- **Minhas Turmas:** Listagem focada apenas nas turmas sob responsabilidade do professor logado.
+- **Chamada Diária:** Sistema de presença simplificado com indicadores visuais de pendência ("Chamada Feita" vs "Pendente Hoje").
+- **Ficha do Aluno:** Acesso rápido aos dados de contato e observações pedagógicas.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 💰 Gestão de Mensalidades
+- **Pagamentos:** Registro simplificado de recebíveis diretamente na ficha do aluno ou painel financeiro.
+- **Status Automático:** Identificação visual de alunos ativos e situação de mensalidade (Mês Pago / Pendente).
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 🛠️ Tecnologias Utilizadas
 
-## Agentic Development
+- **Backend:** Laravel 11 (PHP 8.2+)
+- **Frontend:** Tailwind CSS & Blade Components
+- **Autenticação:** Laravel Breeze (Customizado)
+- **Banco de Dados:** MySQL / PostgreSQL
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
 
-```bash
-composer require laravel/boost --dev
+## 📦 Instalação e Configuração
 
-php artisan boost:install
-```
-
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. **Clonar o projeto:**
+   ```bash
+   git clone [https://github.com/teu-usuario/reforco-escolar.git](https://github.com/teu-usuario/reforco-escolar.git)
+   cd reforco-escolar

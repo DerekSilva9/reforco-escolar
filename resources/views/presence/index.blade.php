@@ -92,11 +92,11 @@
 
                                     <div class="flex items-center gap-2">
                                         <button type="button" onclick="setPresence('{{ $student->id }}', 1)" 
-                                                class="btn-present px-4 py-2 rounded-lg font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 transition-all w-full md:w-auto text-xs">
+                                                class="btn-present px-4 py-2 rounded-lg font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 transition-all w-full md:w-auto text-xs">
                                             ✓ Presente
                                         </button>
                                         <button type="button" onclick="setPresence('{{ $student->id }}', 0)" 
-                                                class="btn-absent px-4 py-2 rounded-lg font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 transition-all w-full md:w-auto text-xs">
+                                                class="btn-absent px-4 py-2 rounded-lg font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 transition-all w-full md:w-auto text-xs">
                                             ✗ Faltou
                                         </button>
                                     </div>
@@ -147,15 +147,19 @@
         
         .btn-active-present { background-color: #10b981; color: white; border-color: #10b981; }
         .dark .btn-active-present { background-color: #047857; color: white; border-color: #047857; }
+        .dark .btn-active-present:hover { background-color: #10b981; border-color: #10b981; color: white; }
         
         .btn-inactive-present { background-color: #ecfdf5; color: #10b981; border-color: #86efac; }
         .dark .btn-inactive-present { background-color: rgba(16, 185, 129, 0.1); color: #6ee7b7; border-color: #059669; }
+        .dark .btn-inactive-present:hover { background-color: rgba(16, 185, 129, 0.15) !important; color: #6ee7b7 !important; }
         
         .btn-active-absent { background-color: #f43f5e; color: white; border-color: #f43f5e; }
         .dark .btn-active-absent { background-color: #be123c; color: white; border-color: #be123c; }
+        .dark .btn-active-absent:hover { background-color: #f43f5e; border-color: #f43f5e; color: white; }
         
         .btn-inactive-absent { background-color: #fff1f2; color: #f43f5e; border-color: #fda4af; }
         .dark .btn-inactive-absent { background-color: rgba(244, 63, 94, 0.1); color: #fda4af; border-color: #f43f5e; }
+        .dark .btn-inactive-absent:hover { background-color: rgba(244, 63, 94, 0.15) !important; color: #fda4af !important; }
     </style>
 
     <script>

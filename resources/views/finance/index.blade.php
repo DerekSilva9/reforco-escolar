@@ -137,12 +137,19 @@
 
                             <!-- Ação -->
                             @if ($row['status'] !== 'pago')
-                                <form method="POST" action="{{ route('financeiro.pay', $student) }}" class="inline">
-                                    @csrf
-                                    <button type="submit" class="px-3 py-2 bg-blue-50 dark:bg-slate-700 border border-blue-300 dark:border-slate-600 rounded-lg font-semibold text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-slate-600 hover:border-blue-400 dark:hover:border-slate-500 transition text-sm whitespace-nowrap">
-                                        Pagar
-                                    </button>
-                                </form>
+                                <div class="flex gap-2">
+                                    <form method="POST" action="{{ route('financeiro.pay', $student) }}" class="inline">
+                                        @csrf
+                                        <button type="submit" class="px-3 py-2 bg-blue-50 dark:bg-slate-700 border border-blue-300 dark:border-slate-600 rounded-lg font-semibold text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-slate-600 hover:border-blue-400 dark:hover:border-slate-500 transition text-sm whitespace-nowrap">
+                                            Pagar
+                                        </button>
+                                    </form>
+                                    @if ($row['status'] === 'atrasado')
+                                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $student->responsavel?->phone ?? '') }}?text={{ urlencode('Olá ' . $student->responsavel?->name . ', tudo bem? Gostaria de informar que identificamos a mensalidade de ' . $student->name . ' está em atraso. Favor, realizar o pagamento o mais breve possível. Obrigado!') }}" target="_blank" class="px-3 py-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-300 dark:border-emerald-700 rounded-lg font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:border-emerald-400 dark:hover:border-emerald-600 transition text-sm whitespace-nowrap flex items-center gap-1">
+                                            <span>💬</span> Cobrar
+                                        </a>
+                                    @endif
+                                </div>
                             @else
                                 <div class="text-emerald-600 font-bold">✓</div>
                             @endif

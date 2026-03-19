@@ -100,25 +100,25 @@
                             <div class="bg-blue-50 dark:bg-slate-700/50 border border-blue-200 dark:border-slate-600 rounded-lg p-4 mb-6 flex items-center justify-between">
                                 <div class="flex gap-2 flex-wrap">
                                     @if ($search !== '')
-                                        <span class="inline-flex items-center px-3 py-1 bg-blue-200 text-blue-900 rounded-full text-xs font-medium">
+                                        <span class="inline-flex items-center px-3 py-1 bg-blue-200 dark:bg-blue-900/40 text-blue-900 dark:text-blue-300 rounded-full text-xs font-medium">
                                             🔍 Busca: "{{ $search }}"
                                             <a href="{{ route('turmas.show', array_merge(request()->query(), ['search' => ''])) }}" class="ml-2 font-bold">×</a>
                                         </span>
                                     @endif
                                     @if ($status !== '')
-                                        <span class="inline-flex items-center px-3 py-1 bg-blue-200 text-blue-900 rounded-full text-xs font-medium">
+                                        <span class="inline-flex items-center px-3 py-1 bg-blue-200 dark:bg-blue-900/40 text-blue-900 dark:text-blue-300 rounded-full text-xs font-medium">
                                             {{ $status === 'active' ? '✓ Ativos' : '✗ Inativos' }}
                                             <a href="{{ route('turmas.show', array_merge(request()->query(), ['status' => ''])) }}" class="ml-2 font-bold">×</a>
                                         </span>
                                     @endif
                                     @if ($timeFilter !== '')
-                                        <span class="inline-flex items-center px-3 py-1 bg-blue-200 text-blue-900 rounded-full text-xs font-medium">
+                                        <span class="inline-flex items-center px-3 py-1 bg-blue-200 dark:bg-blue-900/40 text-blue-900 dark:text-blue-300 rounded-full text-xs font-medium">
                                             ⏰ A partir de {{ $timeFilter }}
                                             <a href="{{ route('turmas.show', array_merge(request()->query(), ['time_filter' => ''])) }}" class="ml-2 font-bold">×</a>
                                         </span>
                                     @endif
                                 </div>
-                                <p class="text-sm text-slate-600 font-medium">
+                                <p class="text-sm text-slate-600 dark:text-slate-300 font-medium">
                                     {{ $students->count() }} aluno(s) encontrado(s)
                                 </p>
                             </div>
@@ -162,9 +162,9 @@
                                             <th class="py-4 px-6 text-right font-semibold">Ações</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-blue-100">
+                                    <tbody class="divide-y divide-blue-100 dark:divide-slate-700">
                                         @foreach ($students as $student)
-                                            <tr class="hover:bg-blue-50 transition-colors duration-150">
+                                            <tr class="hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors duration-150">
                                                 <td class="py-4 px-6">
                                                     <div class="flex items-center">
                                                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold">
@@ -187,8 +187,8 @@
                                                     </div>
                                                 </td>
                                                 <td class="py-4 px-6 text-center">
-                                                    <div class="bg-blue-100 rounded-lg py-2 px-3 inline-block">
-                                                        <p class="font-bold text-blue-900">
+                                                    <div class="bg-blue-100 dark:bg-blue-900/40 rounded-lg py-2 px-3 inline-block">
+                                                        <p class="font-bold text-blue-900 dark:text-blue-300">
                                                             @if ($student->class_start_time && $student->class_end_time)
                                                                 {{ $student->class_start_time->format('H:i') }} - {{ $student->class_end_time->format('H:i') }}
                                                             @else
@@ -202,25 +202,25 @@
                                                         R$ {{ number_format($student->fee, 2, ',', '.') }}
                                                     </p>
                                                     @if ($student->due_day)
-                                                        <p class="text-xs text-slate-500">
+                                                        <p class="text-xs text-slate-500 dark:text-slate-400">
                                                             Vence todo dia {{ $student->due_day }}
                                                         </p>
                                                     @endif
                                                 </td>
                                                 <td class="py-4 px-6 text-center">
                                                     @if ($student->active)
-                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800">
                                                             ✓ Ativo
                                                         </span>
                                                     @else
-                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
+                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800">
                                                             ✗ Inativo
                                                         </span>
                                                     @endif
                                                 </td>
                                                 <td class="py-4 px-6">
                                                     <div class="flex justify-end gap-2">
-                                                        <a href="{{ route('alunos.edit', $student) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-500 rounded-md text-white hover:bg-blue-600 shadow-sm text-xs font-medium transition-colors duration-150">
+                                                        <a href="{{ route('alunos.edit', $student) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-500 dark:bg-blue-600 rounded-md text-white hover:bg-blue-600 dark:hover:bg-blue-500 shadow-sm text-xs font-medium transition-colors duration-150">
                                                             Editar
                                                         </a>
                                                     </div>

@@ -87,7 +87,7 @@
 
                             <div class="flex items-center gap-2 mt-6">
                                 <input id="active" name="active" type="checkbox" value="1" class="rounded border-blue-200 dark:border-slate-600 text-blue-900 dark:text-blue-600 shadow-sm focus:ring-blue-700 dark:focus:ring-blue-500" @checked(old('active', true)) />
-                                <label for="active" class="text-sm text-gray-700 dark:text-slate-300">Ativo</label>
+                                <label for="active" class="text-sm text-slate-700 dark:text-slate-300">Ativo</label>
                             </div>
                         </div>
 
