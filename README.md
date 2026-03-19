@@ -31,7 +31,7 @@ Sistema robusto para gestão de centros de reforço escolar, focado em facilitar
 - **Backend:** Laravel 11 (PHP 8.2+)
 - **Frontend:** Tailwind CSS & Blade Components
 - **Autenticação:** Laravel Breeze (Customizado)
-- **Banco de Dados:** MySQL / PostgreSQL
+- **Banco de Dados:** SQLite
 
 ---
 
