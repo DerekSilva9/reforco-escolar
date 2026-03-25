@@ -1,7 +1,7 @@
 # 📚 Sistema de Gestão - Reforço Escolar
 
-[![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 
 Sistema robusto para gestão de centros de reforço escolar, focado em facilitar o dia a dia de administradores e professores. O sistema prioriza a **funcionalidade direta** e a **acessibilidade**, com uma interface limpa, fontes legíveis e botões de ação rápida.
 
@@ -28,7 +28,7 @@ Sistema robusto para gestão de centros de reforço escolar, focado em facilitar
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Backend:** Laravel 11 (PHP 8.2+)
+- **Backend:** Laravel 13 (PHP 8.3+)
 - **Frontend:** Tailwind CSS & Blade Components
 - **Autenticação:** Laravel Breeze (Customizado)
 - **Banco de Dados:** SQLite

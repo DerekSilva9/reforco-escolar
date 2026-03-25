@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'birth_date', 'responsavel_id', 'parent_name', 'phone', 'team_id', 'fee', 'due_day', 'active', 'notes', 'class_start_time', 'class_end_time'])]
+#[Fillable(['name', 'birth_date', 'responsavel_id', 'parent_name', 'phone', 'team_id', 'fee', 'due_day', 'active', 'notes', 'class_start_time', 'class_end_time', 'school_year', 'school'])]
 class Student extends Model
 {
     use HasFactory;

@@ -63,6 +63,14 @@
                                     <div class="font-medium">{{ $student->team?->name ?? '-' }}</div>
                                 </div>
                                 <div>
+                                    <div class="text-slate-600 dark:text-slate-400">Ano escolar</div>
+                                    <div class="font-medium">{{ $student->school_year ?? '-' }}</div>
+                                </div>
+                                <div>
+                                    <div class="text-slate-600 dark:text-slate-400">Escola</div>
+                                    <div class="font-medium">{{ $student->school ?? '-' }}</div>
+                                </div>
+                                <div>
                                     <div class="text-slate-600 dark:text-slate-400">Mensalidade</div>
                                     <div class="font-medium">R$ {{ number_format((float) $student->fee, 2, ',', '.') }}</div>
                                 </div>

@@ -23,6 +23,44 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         @php $modeValue = $mode ?? 'admin'; @endphp
+        @php $noticeList = $notices ?? collect(); @endphp
+
+        @if ($noticeList->isNotEmpty())
+            <div class="mb-8 bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-slate-300 dark:border-slate-700 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-700/50">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-600 dark:text-slate-100 uppercase tracking-widest">Mural de avisos</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Comunicados oficiais da escola.</p>
+                    </div>
+                    @if (Auth::user()?->isAdmin())
+                        <a href="{{ route('admin.notices.index') }}" class="text-[11px] font-bold text-blue-700 dark:text-blue-300 hover:underline">Gerenciar</a>
+                    @endif
+                </div>
+                <div class="p-6 space-y-4">
+                    @foreach ($noticeList as $notice)
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/20">
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <div class="font-bold text-slate-900 dark:text-slate-50">{{ $notice->title }}</div>
+                                        @if ($notice->pinned)
+                                            <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full bg-amber-200 dark:bg-amber-700 text-blue-950 dark:text-amber-50">Fixado</span>
+                                        @endif
+                                    </div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                        {{ $notice->published_at?->format('d/m/Y H:i') ?? '' }}
+                                        @if ($notice->starts_at || $notice->ends_at)
+                                            • {{ $notice->starts_at?->format('d/m/Y H:i') ?? '-' }} → {{ $notice->ends_at?->format('d/m/Y H:i') ?? '-' }}
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-slate-700 dark:text-slate-200 mt-3 whitespace-pre-line">{{ $notice->body }}</div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
 
         @if ($modeValue === 'admin')
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -320,6 +358,409 @@
                 <p class="text-slate-600 dark:text-slate-300 text-sm font-medium">Ainda não há registros de presença</p>
             </div>
             @endif
+            @elseif($modeValue === 'responsavel')
+            <div x-data="{ tab: (localStorage.getItem('resp_dash_tab') || 'resumo') }"
+                 x-init="$watch('tab', value => localStorage.setItem('resp_dash_tab', value))"
+                 class="space-y-8">
+                <div class="inline-flex rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1 shadow-sm w-full md:w-auto">
+                    <button type="button"
+                            @click="tab = 'resumo'"
+                            :class="tab === 'resumo' ? 'bg-slate-900 dark:bg-slate-700 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'"
+                            class="flex-1 md:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-colors">
+                        Resumo
+                    </button>
+                    <button type="button"
+                            @click="tab = 'desempenho'"
+                            :class="tab === 'desempenho' ? 'bg-slate-900 dark:bg-slate-700 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'"
+                            class="flex-1 md:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-colors">
+                        Desempenho
+                    </button>
+                    <button type="button"
+                            @click="tab = 'observacoes'"
+                            :class="tab === 'observacoes' ? 'bg-slate-900 dark:bg-slate-700 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'"
+                            class="flex-1 md:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-colors">
+                        Observações
+                    </button>
+                </div>
+
+                <div x-show="tab === 'resumo'" class="space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-md border border-slate-300 dark:border-slate-700">
+                        <p class="text-[11px] font-bold text-slate-400 dark:text-slate-300 uppercase tracking-widest">Alunos Vinculados</p>
+                        <div class="flex items-end justify-between mt-2">
+                            <h2 class="text-4xl font-bold text-slate-900 dark:text-slate-50">{{ $children->count() }}</h2>
+                            <span class="text-[10px] font-bold text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md border border-blue-100 dark:border-blue-800 uppercase">Dependentes</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-md border border-slate-300 dark:border-slate-700">
+                        <p class="text-[11px] font-bold text-amber-600/80 dark:text-amber-400/80 uppercase tracking-widest">Mensalidades (Mês)</p>
+                        <div class="flex items-end justify-between mt-2">
+                            <div class="space-y-1">
+                                <div class="text-sm font-bold text-slate-900 dark:text-slate-50">
+                                    {{ ($paymentsCounts['pendentes'] ?? 0) + ($paymentsCounts['atrasados'] ?? 0) }} pendente(s)
+                                </div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                    {{ $paymentsCounts['atrasados'] ?? 0 }} atrasada(s) • {{ $paymentsCounts['pagos'] ?? 0 }} paga(s)
+                                </div>
+                            </div>
+                            <div class="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg text-amber-600 dark:text-amber-400">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-md border border-slate-300 dark:border-slate-700">
+                        <p class="text-[11px] font-bold text-emerald-600/80 dark:text-emerald-400/80 uppercase tracking-widest">Presença (Mês)</p>
+                        <div class="flex items-end justify-between mt-2">
+                            <div>
+                                <div class="text-4xl font-bold text-slate-900 dark:text-slate-50">{{ number_format($overallAttendanceRate ?? 0, 1, ',', '.') }}%</div>
+                                <div class="text-[10px] font-bold text-slate-400 dark:text-slate-300 uppercase tracking-widest mt-1">média geral</div>
+                            </div>
+                            <div class="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg text-emerald-600 dark:text-emerald-400">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    @forelse($children as $student)
+                        @php
+                            $billing = $billingByStudent[$student->id] ?? null;
+                            $billingStatus = $billing['status'] ?? 'pendente';
+                            $billingDueDate = $billing['due_date'] ?? null;
+                            $billingPaidAt = $billing['paid_at'] ?? null;
+                            $billingAmount = $billing['amount'] ?? $student->fee;
+                            $billingMethod = $billing['method'] ?? null;
+
+                            $stats = $attendanceStatsByStudent[$student->id] ?? ['total' => 0, 'present' => 0, 'absent' => 0, 'last_date' => null];
+                            $monthRate = ($stats['total'] ?? 0) > 0 ? round(($stats['present'] / $stats['total']) * 100, 1) : null;
+
+                            $startTime = $student->class_start_time ? \Illuminate\Support\Carbon::parse($student->class_start_time)->format('H:i') : null;
+                            $endTime = $student->class_end_time ? \Illuminate\Support\Carbon::parse($student->class_end_time)->format('H:i') : null;
+                        @endphp
+
+                        <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                            <div class="p-6 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h2 class="text-lg font-bold text-slate-900 dark:text-slate-50">{{ $student->name }}</h2>
+                                        <p class="text-xs text-slate-500 font-medium">
+                                            Turma: {{ $student->team->name }} • {{ $student->team->time }}
+                                            @if($startTime && $endTime)
+                                                • {{ $startTime }}–{{ $endTime }}
+                                            @endif
+                                        </p>
+                                        <p class="text-xs text-slate-500 font-medium mt-1">
+                                            Professor(a): {{ $student->team->teacher?->name ?? '-' }}{{ $student->team->teacher?->phone ? ' • '.$student->team->teacher->phone : '' }}
+                                        </p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl flex items-center justify-center font-bold text-xl">
+                                        {{ substr($student->name, 0, 1) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 space-y-6">
+                                @php
+                                    $billingBoxClasses = match ($billingStatus) {
+                                        'pago' => 'bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800',
+                                        'atrasado' => 'bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-800',
+                                        default => 'bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800',
+                                    };
+
+                                    $billingTextClasses = match ($billingStatus) {
+                                        'pago' => 'text-emerald-700',
+                                        'atrasado' => 'text-rose-700',
+                                        default => 'text-amber-700',
+                                    };
+
+                                    $billingLabel = match ($billingStatus) {
+                                        'pago' => 'Pagamento Confirmado',
+                                        'atrasado' => 'Mensalidade Atrasada',
+                                        default => 'Aguardando Pagamento',
+                                    };
+
+                                    $billingIcon = match ($billingStatus) {
+                                        'pago' => '✅',
+                                        'atrasado' => '⚠️',
+                                        default => '⏳',
+                                    };
+                                @endphp
+
+                                <div class="flex items-center justify-between p-4 rounded-2xl {{ $billingBoxClasses }}">
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Mensalidade de {{ now()->translatedFormat('F') }}</p>
+                                        <p class="text-sm font-bold {{ $billingTextClasses }}">{{ $billingLabel }}</p>
+                                        <p class="text-xs text-slate-500 font-medium mt-1">
+                                            Valor: R$ {{ number_format($billingAmount, 2, ',', '.') }}
+                                            @if($billingStatus === 'pago' && $billingPaidAt)
+                                                • Pago em {{ $billingPaidAt->format('d/m') }}
+                                            @elseif($billingDueDate)
+                                                • {{ $billingStatus === 'atrasado' ? 'Venceu em' : 'Vence em' }} {{ $billingDueDate->format('d/m') }}
+                                            @endif
+                                            @if($billingStatus === 'pago' && $billingMethod)
+                                                • {{ $billingMethod }}
+                                            @endif
+                                        </p>
+                                    </div>
+                                    <span class="text-lg">{{ $billingIcon }}</span>
+                                </div>
+
+                                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Presença no mês</p>
+                                            @if($monthRate !== null)
+                                                <p class="text-sm font-bold text-slate-900 dark:text-slate-50">{{ number_format($monthRate, 1, ',', '.') }}%</p>
+                                                <p class="text-xs text-slate-500 font-medium mt-1">{{ $stats['present'] }} / {{ $stats['total'] }} presenças • {{ $stats['absent'] }} faltas</p>
+                                            @else
+                                                <p class="text-sm font-bold text-slate-600 dark:text-slate-300">Sem aulas registradas</p>
+                                            @endif
+                                        </div>
+                                        @if($monthRate !== null)
+                                            <div class="w-24">
+                                                <div class="h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                                                    <div class="h-2 bg-emerald-500" style="width: {{ min(100, max(0, $monthRate)) }}%"></div>
+                                                </div>
+                                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 text-right">mês atual</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Últimas Presenças</h3>
+                                    <div class="space-y-3">
+                                        @forelse($student->attendances->take(5) as $attendance)
+                                            <div class="flex items-center justify-between text-sm">
+                                                <span class="text-slate-600 dark:text-slate-400 font-medium">{{ $attendance->date->format('d/m/Y') }}</span>
+                                                @if($attendance->present)
+                                                    <span class="flex items-center gap-1.5 text-emerald-600 font-bold text-xs uppercase">
+                                                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Presente
+                                                    </span>
+                                                @else
+                                                    <span class="flex items-center gap-1.5 text-rose-600 font-bold text-xs uppercase">
+                                                        <span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span> Ausente
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            @if($attendance->obs)
+                                                <p class="text-[11px] text-slate-500 italic mt-1 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border-l-2 border-slate-200">
+                                                    "{{ $attendance->obs }}"
+                                                </p>
+                                            @endif
+                                        @empty
+                                            <p class="text-xs text-slate-400 italic">Nenhum registro de aula recente.</p>
+                                        @endforelse
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+                            <p class="text-slate-400">Nenhum aluno vinculado a esta conta de responsável.</p>
+                        </div>
+                    @endforelse
+                </div>
+                </div>
+
+                <div x-show="tab === 'desempenho'" class="space-y-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        @forelse($children as $student)
+                            @php
+                                $stats = $attendanceStatsByStudent[$student->id] ?? ['total' => 0, 'present' => 0, 'absent' => 0, 'last_date' => null];
+                                $monthRate = ($stats['total'] ?? 0) > 0 ? round(($stats['present'] / $stats['total']) * 100, 1) : null;
+
+                                $startTime = $student->class_start_time ? \Illuminate\Support\Carbon::parse($student->class_start_time)->format('H:i') : null;
+                                $endTime = $student->class_end_time ? \Illuminate\Support\Carbon::parse($student->class_end_time)->format('H:i') : null;
+
+                                $obsAttendances = $student->attendances->filter(fn ($attendance) => (bool) $attendance->obs);
+                            @endphp
+
+                            <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                                <div class="p-6 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                                    <h2 class="text-lg font-bold text-slate-900 dark:text-slate-50">{{ $student->name }}</h2>
+                                    <p class="text-xs text-slate-500 font-medium mt-1">
+                                        Turma: {{ $student->team->name }} • {{ $student->team->time }}
+                                        @if($startTime && $endTime)
+                                            • {{ $startTime }}–{{ $endTime }}
+                                        @endif
+                                    </p>
+                                    <p class="text-xs text-slate-500 font-medium mt-1">
+                                        Professor(a): {{ $student->team->teacher?->name ?? '-' }}{{ $student->team->teacher?->phone ? ' • '.$student->team->teacher->phone : '' }}
+                                    </p>
+                                </div>
+
+                                <div class="p-6 space-y-6">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
+                                            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Presença (mês)</p>
+                                            @if($monthRate !== null)
+                                                <p class="text-sm font-bold text-slate-900 dark:text-slate-50 mt-1">{{ number_format($monthRate, 1, ',', '.') }}%</p>
+                                                <p class="text-xs text-slate-500 font-medium mt-1">{{ $stats['present'] }} / {{ $stats['total'] }} presenças</p>
+                                            @else
+                                                <p class="text-sm font-bold text-slate-600 dark:text-slate-300 mt-1">Sem aulas</p>
+                                            @endif
+                                        </div>
+
+                                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
+                                            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Faltas (mês)</p>
+                                            <p class="text-sm font-bold text-slate-900 dark:text-slate-50 mt-1">{{ (int) ($stats['absent'] ?? 0) }}</p>
+                                            <p class="text-xs text-slate-500 font-medium mt-1">Total de aulas: {{ (int) ($stats['total'] ?? 0) }}</p>
+                                        </div>
+
+                                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
+                                            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Última aula</p>
+                                            <p class="text-sm font-bold text-slate-900 dark:text-slate-50 mt-1">
+                                                {{ $stats['last_date'] ? $stats['last_date']->format('d/m/Y') : '-' }}
+                                            </p>
+                                            <p class="text-xs text-slate-500 font-medium mt-1">Baseado nas chamadas registradas</p>
+                                        </div>
+
+                                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
+                                            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Observações</p>
+                                            <p class="text-sm font-bold text-slate-900 dark:text-slate-50 mt-1">{{ $obsAttendances->count() }}</p>
+                                            <p class="text-xs text-slate-500 font-medium mt-1">Aulas com recado recente</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-4 rounded-2xl bg-white/60 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-700">
+                                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Observações gerais (professor)</p>
+                                        @if($student->notes)
+                                            <div class="text-sm text-slate-700 dark:text-slate-200 font-medium mt-2 leading-relaxed">{!! nl2br(e($student->notes)) !!}</div>
+                                        @else
+                                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-2 italic">Sem observações gerais cadastradas.</p>
+                                        @endif
+                                    </div>
+
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Observações de aula</p>
+                                        <div class="space-y-3 mt-3">
+                                            @forelse($obsAttendances as $attendance)
+                                                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
+                                                    <div class="flex items-center justify-between">
+                                                        <span class="text-xs font-bold text-slate-600 dark:text-slate-300">{{ $attendance->date->format('d/m/Y') }}</span>
+                                                        <span class="text-[10px] font-bold uppercase tracking-widest {{ $attendance->present ? 'text-emerald-600' : 'text-rose-600' }}">
+                                                            {{ $attendance->present ? 'Presente' : 'Ausente' }}
+                                                        </span>
+                                                    </div>
+                                                    <p class="text-sm text-slate-700 dark:text-slate-200 font-medium mt-2">"{{ $attendance->obs }}"</p>
+                                                </div>
+                                            @empty
+                                                <p class="text-sm text-slate-500 dark:text-slate-400 italic">Nenhuma observação recente nas chamadas.</p>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="col-span-full text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+                                <p class="text-slate-400">Nenhum aluno vinculado a esta conta de responsável.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <div x-show="tab === 'observacoes'" class="space-y-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        @forelse($children as $student)
+                            @php
+                                $startTime = $student->class_start_time ? \Illuminate\Support\Carbon::parse($student->class_start_time)->format('H:i') : null;
+                                $endTime = $student->class_end_time ? \Illuminate\Support\Carbon::parse($student->class_end_time)->format('H:i') : null;
+
+                                $obsAttendances = $student->attendances->filter(fn ($attendance) => (bool) $attendance->obs);
+                                $obsPreview = $obsAttendances->take(6);
+                                $obsHasMore = $obsAttendances->count() > $obsPreview->count();
+                                $lastObsDate = $obsAttendances->first()?->date;
+                            @endphp
+
+                            <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                                <div class="p-6 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                                    <div class="flex items-start justify-between gap-4">
+                                        <div>
+                                            <h2 class="text-lg font-bold text-slate-900 dark:text-slate-50">{{ $student->name }}</h2>
+                                            <p class="text-xs text-slate-500 font-medium mt-1">
+                                                Turma: {{ $student->team->name }} • {{ $student->team->time }}
+                                                @if($startTime && $endTime)
+                                                    • {{ $startTime }}–{{ $endTime }}
+                                                @endif
+                                            </p>
+                                            <p class="text-xs text-slate-500 font-medium mt-1">
+                                                Professor(a): {{ $student->team->teacher?->name ?? '-' }}{{ $student->team->teacher?->phone ? ' • '.$student->team->teacher->phone : '' }}
+                                            </p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Último recado</p>
+                                            <p class="text-sm font-bold text-slate-900 dark:text-slate-50 mt-1">{{ $lastObsDate?->format('d/m/Y') ?? '-' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-6 space-y-6">
+                                    <div class="p-4 rounded-2xl bg-white/60 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-700">
+                                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Observações gerais (professor)</p>
+                                        @if($student->notes)
+                                            <div class="text-sm text-slate-700 dark:text-slate-200 font-medium mt-2 leading-relaxed">{!! nl2br(e($student->notes)) !!}</div>
+                                        @else
+                                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-2 italic">Sem observações gerais cadastradas.</p>
+                                        @endif
+                                    </div>
+
+                                    <div x-data="{ open: false }">
+                                        <div class="flex items-center justify-between gap-4">
+                                            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Recados por aula</p>
+                                            @if($obsHasMore)
+                                                <button type="button" @click="open = !open" class="text-[11px] font-bold text-blue-700 dark:text-blue-300 hover:underline">
+                                                    <span x-show="!open">Ver mais</span>
+                                                    <span x-show="open">Ver menos</span>
+                                                </button>
+                                            @endif
+                                        </div>
+
+                                        <div class="space-y-3 mt-3">
+                                            @forelse($obsPreview as $attendance)
+                                                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
+                                                    <div class="flex items-center justify-between">
+                                                        <span class="text-xs font-bold text-slate-600 dark:text-slate-300">{{ $attendance->date->format('d/m/Y') }}</span>
+                                                        <span class="text-[10px] font-bold uppercase tracking-widest {{ $attendance->present ? 'text-emerald-600' : 'text-rose-600' }}">
+                                                            {{ $attendance->present ? 'Presente' : 'Ausente' }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="text-sm text-slate-700 dark:text-slate-200 font-medium mt-2 leading-relaxed">"{!! nl2br(e($attendance->obs)) !!}"</div>
+                                                </div>
+                                            @empty
+                                                <p class="text-sm text-slate-500 dark:text-slate-400 italic">Nenhum recado ainda nas chamadas.</p>
+                                            @endforelse
+                                        </div>
+
+                                        @if($obsHasMore)
+                                            <div x-show="open" class="space-y-3 mt-3">
+                                                @foreach($obsAttendances->skip($obsPreview->count()) as $attendance)
+                                                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
+                                                        <div class="flex items-center justify-between">
+                                                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">{{ $attendance->date->format('d/m/Y') }}</span>
+                                                            <span class="text-[10px] font-bold uppercase tracking-widest {{ $attendance->present ? 'text-emerald-600' : 'text-rose-600' }}">
+                                                                {{ $attendance->present ? 'Presente' : 'Ausente' }}
+                                                            </span>
+                                                        </div>
+                                                        <div class="text-sm text-slate-700 dark:text-slate-200 font-medium mt-2 leading-relaxed">"{!! nl2br(e($attendance->obs)) !!}"</div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="col-span-full text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+                                <p class="text-slate-400">Nenhum aluno vinculado a esta conta de responsável.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
         @endif
     </div>
 </x-app-layout>

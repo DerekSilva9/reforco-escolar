@@ -136,6 +136,8 @@ class StudentController extends Controller
             'class_start_time' => ['nullable', 'date_format:H:i'],
             'class_end_time' => ['nullable', 'date_format:H:i'],
             'notes' => ['nullable', 'string'],
+            'school_year' => ['nullable', 'string', 'max:255'],
+            'school' => ['nullable', 'string', 'max:255'],
         ]);
 
         $responsavel = User::query()
@@ -194,6 +196,8 @@ class StudentController extends Controller
             'class_start_time' => ['nullable', 'date_format:H:i'],
             'class_end_time' => ['nullable', 'date_format:H:i'],
             'notes' => ['nullable', 'string'],
+            'school_year' => ['nullable', 'string', 'max:255'],
+            'school' => ['nullable', 'string', 'max:255'],
         ]);
 
         $responsavel = User::query()

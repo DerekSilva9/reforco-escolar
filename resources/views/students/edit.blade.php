@@ -91,6 +91,20 @@
                             </div>
                         </div>
 
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <x-input-label for="school_year" value="Ano escolar (opcional)" />
+                                <x-text-input id="school_year" name="school_year" type="text" class="mt-1 block w-full" :value="old('school_year', $student->school_year)" placeholder="Ex: 1º ano, 2º série" />
+                                <x-input-error class="mt-2" :messages="$errors->get('school_year')" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="school" value="Escola (opcional)" />
+                                <x-text-input id="school" name="school" type="text" class="mt-1 block w-full" :value="old('school', $student->school)" />
+                                <x-input-error class="mt-2" :messages="$errors->get('school')" />
+                            </div>
+                        </div>
+
                         <div>
                             <x-input-label for="notes" value="Observações (opcional)" />
                             <textarea id="notes" name="notes" rows="4" class="mt-1 block w-full border-blue-200 dark:border-slate-600 focus:border-blue-700 dark:focus:border-blue-500 focus:ring-blue-700 dark:focus:ring-blue-500 rounded-md shadow-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 placeholder:text-slate-400 dark:placeholder:text-slate-500">{{ old('notes', $student->notes) }}</textarea>

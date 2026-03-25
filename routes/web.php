@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\NoticeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\ProfileController;
@@ -38,6 +39,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/usuarios/novo', [UserManagementController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/usuarios', [UserManagementController::class, 'store'])->name('admin.users.store');
     Route::delete('/admin/usuarios/{user}', [UserManagementController::class, 'destroy'])->name('admin.users.destroy');
+
+    Route::get('/admin/recados', [NoticeController::class, 'index'])->name('admin.notices.index');
+    Route::post('/admin/recados', [NoticeController::class, 'store'])->name('admin.notices.store');
+    Route::get('/admin/recados/{notice}/editar', [NoticeController::class, 'edit'])->name('admin.notices.edit');
+    Route::patch('/admin/recados/{notice}', [NoticeController::class, 'update'])->name('admin.notices.update');
+    Route::delete('/admin/recados/{notice}', [NoticeController::class, 'destroy'])->name('admin.notices.destroy');
 
     // Compat (pode remover depois)
     Route::get('/teams/{team}/attendance', [AttendanceController::class, 'create'])->name('teams.attendance.create');
