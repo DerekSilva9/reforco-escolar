@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\StudentExport;
 use App\Models\Student;
 use App\Models\Team;
 use App\Models\User;
@@ -13,17 +14,21 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        if (! $user->isAdmin() && ! $user->isProfessor()) {
-            abort(403);
-        }
+        
+        $this->authorize('viewAny', Student::class);
 
         $teams = Team::query()
             ->when(! $user->isAdmin(), fn ($query) => $query->where('user_id', $user->id))
             ->orderBy('name')
-            ->get(['id', 'name', 'time']);
+            ->select('id', 'name', 'time') // Selecionar apenas colunas necessárias
+            ->get();
 
         $students = Student::query()
-            ->with(['team', 'responsavel'])
+            ->select('id', 'name', 'team_id', 'responsavel_id', 'school_year', 'phone', 'fee', 'active', 'parent_name', 'birth_date')
+            ->with([
+                'team:id,name,time,user_id',
+                'responsavel:id,name,phone'
+            ])
             ->when(! $user->isAdmin(), fn ($query) => $query->whereHas('team', fn ($q) => $q->where('user_id', $user->id)))
             ->when($request->filled('team_id'), fn ($query) => $query->where('team_id', $request->integer('team_id')))
             ->orderBy('active', 'desc')
@@ -37,12 +42,43 @@ class StudentController extends Controller
         ]);
     }
 
-    public function show(Request $request, Student $student)
+    public function export(Request $request)
     {
         $user = $request->user();
-        if (! $user->isAdmin() && ! $user->isProfessor()) {
-            abort(403);
+        
+        // Usar Policy
+        $this->authorize('export', Student::class);
+
+        $teamId = $request->filled('team_id') ? $request->integer('team_id') : null;
+
+        // Validar que o usuário tem permissão na turma
+        if ($teamId) {
+            $team = Team::find($teamId);
+            if (! $team) {
+                abort(404, 'Turma não encontrada');
+            }
+            
+            $this->authorize('view', $team);
         }
+
+        $teamName = $teamId ? Team::find($teamId)?->name : 'Todos';
+        $fileName = "alunos_{$teamName}_" . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        $filePath = storage_path('app/exports/' . $fileName);
+
+        // Criar diretório se não existir
+        if (! is_dir(storage_path('app/exports'))) {
+            mkdir(storage_path('app/exports'), 0755, true);
+        }
+
+        $export = new StudentExport($teamId);
+        $export->export($filePath);
+
+        return response()->download($filePath, $fileName)->deleteFileAfterSend(true);
+    }
+
+    public function show(Request $request, Student $student)
+    {
+        $this->authorize('view', $student);
 
         $student->load([
             'team',
@@ -50,10 +86,6 @@ class StudentController extends Controller
             'payments' => fn ($q) => $q->orderByDesc('paid_at')->limit(12),
             'attendances' => fn ($q) => $q->orderByDesc('date')->limit(30),
         ]);
-
-        if (! $user->isAdmin() && $student->team?->user_id !== $user->id) {
-            abort(403);
-        }
 
         $now = now();
         $year = $now->year;
@@ -73,15 +105,9 @@ class StudentController extends Controller
 
     public function updateNotes(Request $request, Student $student)
     {
-        $user = $request->user();
-        if (! $user->isAdmin() && ! $user->isProfessor()) {
-            abort(403);
-        }
+        $this->authorize('update', $student);
+        
         $student->load('team');
-
-        if (! $user->isAdmin() && $student->team?->user_id !== $user->id) {
-            abort(403);
-        }
 
         $validated = $request->validate([
             'notes' => ['nullable', 'string'],
@@ -98,10 +124,7 @@ class StudentController extends Controller
 
     public function create(Request $request)
     {
-        $user = $request->user();
-        if (! $user->isAdmin()) {
-            abort(403);
-        }
+        $this->authorize('create', Student::class);
 
         $teams = Team::query()
             ->orderBy('name')
@@ -120,10 +143,7 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
-        $user = $request->user();
-        if (! $user->isAdmin()) {
-            abort(403);
-        }
+        $this->authorize('create', Student::class);
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -157,10 +177,7 @@ class StudentController extends Controller
 
     public function edit(Request $request, Student $student)
     {
-        $user = $request->user();
-        if (! $user->isAdmin()) {
-            abort(403);
-        }
+        $this->authorize('update', $student);
 
         $teams = Team::query()
             ->orderBy('name')
@@ -180,10 +197,7 @@ class StudentController extends Controller
 
     public function update(Request $request, Student $student)
     {
-        $user = $request->user();
-        if (! $user->isAdmin()) {
-            abort(403);
-        }
+        $this->authorize('update', $student);
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -217,10 +231,7 @@ class StudentController extends Controller
 
     public function destroy(Request $request, Student $student)
     {
-        $user = $request->user();
-        if (! $user->isAdmin()) {
-            abort(403);
-        }
+        $this->authorize('delete', $student);
 
         $student->delete();
 

@@ -12,9 +12,7 @@ class TeamController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        if (! $user->isAdmin() && ! $user->isProfessor()) {
-            abort(403);
-        }
+        $this->authorize('viewAny', Team::class);
 
         $teams = Team::query()
             ->with(['teacher'])
@@ -31,9 +29,7 @@ class TeamController extends Controller
     public function create(Request $request)
     {
         $user = $request->user();
-        if (! $user->isAdmin() && ! $user->isProfessor()) {
-            abort(403);
-        }
+        $this->authorize('create', Team::class);
 
         $teachers = $user->isAdmin()
             ? User::query()->where('role', User::ROLE_PROFESSOR)->orderBy('name')->get(['id', 'name'])
@@ -47,9 +43,7 @@ class TeamController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
-        if (! $user->isAdmin() && ! $user->isProfessor()) {
-            abort(403);
-        }
+        $this->authorize('create', Team::class);
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -76,12 +70,7 @@ class TeamController extends Controller
     public function edit(Request $request, Team $team)
     {
         $user = $request->user();
-        if (! $user->isAdmin() && ! $user->isProfessor()) {
-            abort(403);
-        }
-        if (! $user->isAdmin() && $team->user_id !== $user->id) {
-            abort(403);
-        }
+        $this->authorize('update', $team);
 
         $teachers = $user->isAdmin()
             ? User::query()->where('role', User::ROLE_PROFESSOR)->orderBy('name')->get(['id', 'name'])
@@ -96,12 +85,7 @@ class TeamController extends Controller
     public function update(Request $request, Team $team)
     {
         $user = $request->user();
-        if (! $user->isAdmin() && ! $user->isProfessor()) {
-            abort(403);
-        }
-        if (! $user->isAdmin() && $team->user_id !== $user->id) {
-            abort(403);
-        }
+        $this->authorize('update', $team);
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -127,13 +111,7 @@ class TeamController extends Controller
 
     public function show(Request $request, Team $team)
     {
-        $user = $request->user();
-        if (! $user->isAdmin() && ! $user->isProfessor()) {
-            abort(403);
-        }
-        if (! $user->isAdmin() && $team->user_id !== $user->id) {
-            abort(403);
-        }
+        $this->authorize('view', $team);
 
         $query = $team->students();
 

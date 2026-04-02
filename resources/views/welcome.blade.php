@@ -124,7 +124,7 @@
             <div class="relative h-56 w-full sm:h-80"
                  role="img"
                  aria-label="Foto da escola"
-                 style="background-image: linear-gradient(90deg, rgba(8,145,178,0.10), rgba(22,163,74,0.08)), url('{{ $bannerImageUrl }}'); background-size: cover; background-position: center 22%;">
+                 style="background-image: linear-gradient(90deg, rgba(8,145,178,0.10), rgba(22,163,74,0.08)), url('{{ $bannerImageUrl }}'); background-size: cover; background-position: center 45%;">
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/45 via-slate-950/10 to-transparent" aria-hidden="true"></div>
             </div>
         </section>

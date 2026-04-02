@@ -27,6 +27,10 @@ Route::middleware('auth')->group(function () {
         ->names('alunos')
         ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
 
+    Route::get('/alunos/exportar/excel', [StudentController::class, 'export'])
+        ->name('alunos.export')
+        ->middleware('throttle:5,60'); // 5 exports por hora
+
     Route::post('/alunos/{student}/observacoes', [StudentController::class, 'updateNotes'])->name('alunos.notes');
 
     Route::get('/presenca', [AttendanceController::class, 'index'])->name('presenca.index');

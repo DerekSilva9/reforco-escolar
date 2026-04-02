@@ -13,9 +13,7 @@ class UserManagementController extends Controller
 {
     public function index(Request $request)
     {
-        if (! $request->user()->isAdmin()) {
-            abort(403);
-        }
+        $this->authorize('viewAny', User::class);
 
         $role = $request->string('role')->toString();
         if (! in_array($role, [User::ROLE_PROFESSOR, User::ROLE_RESPONSAVEL], true)) {
@@ -37,18 +35,14 @@ class UserManagementController extends Controller
 
     public function create(Request $request)
     {
-        if (! $request->user()->isAdmin()) {
-            abort(403);
-        }
+        $this->authorize('create', User::class);
 
         return view('admin.users.create');
     }
 
     public function store(Request $request)
     {
-        if (! $request->user()->isAdmin()) {
-            abort(403);
-        }
+        $this->authorize('create', User::class);
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -79,9 +73,7 @@ class UserManagementController extends Controller
 
     public function destroy(Request $request, User $user)
     {
-        if (! $request->user()->isAdmin()) {
-            abort(403);
-        }
+        $this->authorize('delete', $user);
 
         if ($user->id === $request->user()->id) {
             return back()->with('error', 'Você não pode excluir seu próprio usuário.');
