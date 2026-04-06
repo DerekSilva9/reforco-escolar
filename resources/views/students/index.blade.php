@@ -6,7 +6,7 @@
                     <span class="w-2 h-6 bg-blue-600 rounded-full"></span>
                     Alunos
                 </h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium ml-4">{{ $students->count() }} aluno{{ $students->count() !== 1 ? 's' : '' }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium ml-4">{{ $students->total() }} aluno{{ $students->total() !== 1 ? 's' : '' }}</p>
             </div>
             @if (auth()->user()?->isAdmin())
                 <a href="{{ route('alunos.create') }}" class="group flex items-center gap-3 px-4 py-2.5 bg-blue-600 dark:bg-blue-700 border border-blue-700 dark:border-blue-600 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 shadow-md hover:shadow-lg transition-all">
@@ -19,7 +19,7 @@
         </div>
     </x-slot>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8">
         <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-700 mb-6">
             <form method="GET" action="{{ route('alunos.index') }}" class="flex flex-wrap gap-3 items-end">
                 <div class="flex-1 min-w-xs">
@@ -154,6 +154,15 @@
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- Pagination -->
+                @if ($students->hasPages())
+                    <div class="mt-6 bg-white dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+                        <div class="flex justify-center">
+                            {{ $students->links() }}
+                        </div>
+                    </div>
+                @endif
             </div>
         @endif
     </div>

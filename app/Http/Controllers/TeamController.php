@@ -15,7 +15,7 @@ class TeamController extends Controller
         $this->authorize('viewAny', Team::class);
 
         $teams = Team::query()
-            ->with(['teacher'])
+            ->withTeacher()
             ->withCount('students')
             ->when(! $user->isAdmin(), fn ($query) => $query->where('user_id', $user->id))
             ->orderBy('name')
@@ -113,7 +113,8 @@ class TeamController extends Controller
     {
         $this->authorize('view', $team);
 
-        $query = $team->students();
+        $query = $team->students()
+            ->with(['responsavel:id,name,phone', 'payments:id,student_id,year,month,paid_at,amount']);
 
         // Filtro por status
         $status = $request->string('status')->toString();

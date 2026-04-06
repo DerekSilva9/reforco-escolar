@@ -12,9 +12,7 @@ class FinanceController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        if (! $user->isAdmin()) {
-            abort(403);
-        }
+        $this->authorize('finance-view');
 
         $status = $request->string('status')->toString();
         if (! in_array($status, ['pendentes', 'pagos', 'atrasados'], true)) {
@@ -79,10 +77,12 @@ class FinanceController extends Controller
 
     public function pay(Request $request, Student $student)
     {
-        $user = $request->user();
-        if (! $user->isAdmin()) {
-            abort(403);
-        }
+        $this->authorize('finance-create');
+
+        $validated = $request->validate([
+            'method' => ['nullable', 'string', 'in:dinheiro,cartao,pix,boleto,transferencia'],
+            'obs' => ['nullable', 'string', 'max:500'],
+        ]);
 
         $now = now();
         $year = $now->year;
@@ -93,8 +93,8 @@ class FinanceController extends Controller
             [
                 'amount' => $student->fee,
                 'paid_at' => $now,
-                'method' => $request->string('method')->toString() ?: null,
-                'obs' => $request->string('obs')->toString() ?: null,
+                'method' => $validated['method'] ?? null,
+                'obs' => $validated['obs'] ?? null,
             ],
         );
 

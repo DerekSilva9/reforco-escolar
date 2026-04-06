@@ -12,8 +12,8 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-6 md:py-8 lg:py-12">
+        <div class="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 space-y-4 md:space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur overflow-hidden shadow-sm sm:rounded-lg border border-blue-100 dark:border-slate-700">
                     <div class="p-6 text-slate-900 dark:text-slate-50">

@@ -25,15 +25,12 @@ class StudentController extends Controller
 
         $students = Student::query()
             ->select('id', 'name', 'team_id', 'responsavel_id', 'school_year', 'phone', 'fee', 'active', 'parent_name', 'birth_date')
-            ->with([
-                'team:id,name,time,user_id',
-                'responsavel:id,name,phone'
-            ])
+            ->withCommonRelations()
             ->when(! $user->isAdmin(), fn ($query) => $query->whereHas('team', fn ($q) => $q->where('user_id', $user->id)))
             ->when($request->filled('team_id'), fn ($query) => $query->where('team_id', $request->integer('team_id')))
             ->orderBy('active', 'desc')
             ->orderBy('name')
-            ->get();
+            ->paginate(15);
 
         return view('students.index', [
             'students' => $students,

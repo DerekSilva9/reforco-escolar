@@ -5,15 +5,18 @@
 <style>
     .nav-link-item {
         font-family: 'DM Sans', sans-serif;
-        font-size: 0.8125rem;
+        font-size: 0.8625rem;
         font-weight: 500;
         letter-spacing: 0.04em;
         color: #93c5fd;
-        padding: 0.35rem 0.75rem;
+        padding: 0.375rem 0.85rem;
         border-radius: 6px;
         transition: all 0.18s ease;
         text-decoration: none;
         position: relative;
+        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
     }
     .nav-link-item:hover {
         color: #eff6ff;
@@ -41,14 +44,17 @@
     }
     .user-btn {
         font-family: 'DM Sans', sans-serif;
-        font-size: 0.8125rem;
+        font-size: 0.875rem;
         font-weight: 500;
         color: #bfdbfe;
         background: rgba(255,255,255,0.06);
         border: 1px solid rgba(255,255,255,0.12);
         border-radius: 8px;
-        padding: 0.4rem 0.85rem;
+        padding: 0.45rem 0.95rem;
         transition: all 0.18s;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
     }
     .user-btn:hover {
         background: rgba(255,255,255,0.1);
@@ -67,14 +73,17 @@
     }
     .resp-nav-link {
         font-family: 'DM Sans', sans-serif;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         font-weight: 500;
         color: #93c5fd;
         display: block;
-        padding: 0.6rem 1.25rem;
+        padding: 0.7rem 1.25rem;
         transition: all 0.15s;
         letter-spacing: 0.02em;
         text-decoration: none;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
     }
     .resp-nav-link:hover, .resp-nav-link.active {
         background: rgba(34, 211, 238, 0.1);
@@ -84,8 +93,8 @@
 @endonce
 
 <nav x-data="{ open: false }" class="bg-blue-950 text-amber-50 border-b border-blue-900/40 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16 items-center">
+    <div class="max-w-7xl mx-auto px-3 md:px-6 lg:px-8">
+        <div class="flex justify-between h-16 md:h-16 items-center">
 
             {{-- ── LOGO ── --}}
             <div class="flex items-center gap-5">
@@ -186,7 +195,7 @@
             {{-- ── HAMBURGER (mobile) ── --}}
             <div class="-me-2 flex items-center sm:hidden gap-2">
                 <button id="theme-toggle-mobile" type="button" class="theme-btn">
-                    <svg id="sun-icon-mobile" class="w-4 h-4 text-amber-300 hidden" fill="currentColor" viewBox="0 0 20 20">
+                    <svg id="sun-icon-mobile" class="w-5 h-5 text-amber-300 hidden" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.536l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.828-2.828a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zm.464-4.536l.707-.707a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414zm-2.828 2.828a1 1 0 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414zM4.929 4.929a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                     </svg>
                     <svg id="moon-icon-mobile" class="w-4 h-4 text-blue-300/70" fill="currentColor" viewBox="0 0 20 20">
@@ -207,7 +216,7 @@
 
     {{-- ── RESPONSIVE MENU ── --}}
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden border-t border-blue-900/40">
-        <div class="py-2">
+        <div class="py-3">
             <a href="{{ route('dashboard') }}" class="resp-nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
 
             @if (Auth::user()?->isAdmin() || Auth::user()?->isProfessor())
@@ -223,12 +232,12 @@
              @endif
         </div>
 
-        <div class="pt-3 pb-2 border-t border-blue-900/40">
-            <div class="px-5 mb-2">
+        <div class="pt-4 pb-3 border-t border-blue-900/40">
+            <div class="px-5 mb-3">
                 <div style="font-family:'Cormorant Garamond',serif;" class="text-base font-semibold text-blue-100">{{ Auth::user()->name }}</div>
                 <div style="font-family:'DM Sans',sans-serif;" class="text-xs text-cyan-500/70">{{ Auth::user()->email }}</div>
             </div>
-            <div class="space-y-0.5">
+            <div class="space-y-1">
                 <a href="{{ route('profile.edit') }}" class="resp-nav-link">Perfil</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

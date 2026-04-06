@@ -12,7 +12,7 @@
         </div>
     </x-slot>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8">
         <form method="GET" action="{{ route('presenca.index') }}" class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-md border border-slate-300 dark:border-slate-700 mb-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>

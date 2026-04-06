@@ -10,6 +10,7 @@ use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
@@ -31,25 +32,52 @@ class DashboardController extends Controller
         }
 
         if ($user->isAdmin()) {
-            $totalStudentsCount = Student::query()->count();
+            // Cache keys with date to ensure daily refresh
+            $cacheKey = 'dashboard.admin.' . now()->toDateString();
+            $cacheTtl = now()->addHours(1);
 
-            $pendingFeesCount = Student::query()
-                ->where('active', true)
-                ->whereDoesntHave('payments', fn ($q) => $q->where('year', $year)->where('month', $month)->whereNotNull('paid_at'))
-                ->count();
+            $totalStudentsCount = Cache::remember(
+                "$cacheKey.total_students",
+                $cacheTtl,
+                fn () => Student::query()->count()
+            );
 
-            $classesTodayCount = Attendance::query()
-                ->join('students', 'attendances.student_id', '=', 'students.id')
-                ->whereDate('attendances.date', $today)
-                ->distinct()
-                ->pluck('students.team_id')
-                ->count();
+            $pendingFeesCount = Cache::remember(
+                "$cacheKey.pending_fees",
+                $cacheTtl,
+                fn () => Student::query()
+                    ->where('active', true)
+                    ->whereDoesntHave('payments', fn ($q) => $q->where('year', $year)->where('month', $month)->whereNotNull('paid_at'))
+                    ->count()
+            );
 
+            $classesTodayCount = Cache::remember(
+                "$cacheKey.classes_today",
+                $cacheTtl,
+                fn () => Attendance::query()
+                    ->join('students', 'attendances.student_id', '=', 'students.id')
+                    ->whereDate('attendances.date', $today)
+                    ->distinct()
+                    ->pluck('students.team_id')
+                    ->count()
+            );
+
+            $latestPaymentIds = Cache::remember(
+                "$cacheKey.latest_payments",
+                $cacheTtl,
+                fn () => Payment::query()
+                    ->whereNotNull('paid_at')
+                    ->orderByDesc('paid_at')
+                    ->limit(8)
+                    ->pluck('id')
+                    ->toArray()
+            );
+            
+            // Fetch fresh with relations
             $latestPayments = Payment::query()
-                ->whereNotNull('paid_at')
+                ->whereIn('id', $latestPaymentIds)
                 ->with(['student.team'])
                 ->orderByDesc('paid_at')
-                ->limit(8)
                 ->get();
 
             return view('dashboard', [
@@ -67,7 +95,21 @@ class DashboardController extends Controller
             $month = $now->month;
             $year = $now->year;
 
-            // Buscamos os filhos com as relações necessárias
+            // Cache per user for 2 hours
+            $responsavelCacheKey = "dashboard.responsavel.{$user->id}." . now()->toDateString();
+            $responsavelCacheTtl = now()->addHours(2);
+
+            // Cache only the student IDs, not the full models
+            $childIds = Cache::remember(
+                "$responsavelCacheKey.child_ids",
+                $responsavelCacheTtl,
+                fn () => $user->studentsAsResponsavel()
+                    ->orderBy('name')
+                    ->pluck('id')
+                    ->toArray()
+            );
+
+            // Fetch children fresh with relations
             $children = $user->studentsAsResponsavel()
                 ->with(['team.teacher', 'attendances' => function ($q) {
                     $q->orderBy('date', 'desc')->limit(30);
@@ -75,6 +117,7 @@ class DashboardController extends Controller
                 ->with(['payments' => function ($q) use ($year, $month) {
                     $q->where('year', $year)->where('month', $month);
                 }])
+                ->whereIn('id', $childIds)
                 ->orderBy('name')
                 ->get();
 
@@ -84,22 +127,26 @@ class DashboardController extends Controller
             $childIds = $children->pluck('id');
             $attendanceStatsByStudent = $childIds->isEmpty()
                 ? collect()
-                : Attendance::query()
-                    ->whereIn('student_id', $childIds)
-                    ->whereBetween('date', [$monthStart->toDateString(), $monthEnd->toDateString()])
-                    ->selectRaw('student_id, COUNT(*) as total, SUM(CASE WHEN present = 1 THEN 1 ELSE 0 END) as present, SUM(CASE WHEN present = 0 THEN 1 ELSE 0 END) as absent, MAX(date) as last_date')
-                    ->groupBy('student_id')
-                    ->get()
-                    ->mapWithKeys(function ($row) {
-                        return [
-                            (int) $row->student_id => [
-                                'total' => (int) ($row->total ?? 0),
-                                'present' => (int) ($row->present ?? 0),
-                                'absent' => (int) ($row->absent ?? 0),
-                                'last_date' => $row->last_date ? Carbon::parse($row->last_date) : null,
-                            ],
-                        ];
-                    });
+                : Cache::remember(
+                    "$responsavelCacheKey.attendance_stats",
+                    $responsavelCacheTtl,
+                    fn () => Attendance::query()
+                        ->whereIn('student_id', $childIds)
+                        ->whereBetween('date', [$monthStart->toDateString(), $monthEnd->toDateString()])
+                        ->selectRaw('student_id, COUNT(*) as total, SUM(CASE WHEN present = 1 THEN 1 ELSE 0 END) as present, SUM(CASE WHEN present = 0 THEN 1 ELSE 0 END) as absent, MAX(date) as last_date')
+                        ->groupBy('student_id')
+                        ->get()
+                        ->mapWithKeys(function ($row) {
+                            return [
+                                (int) $row->student_id => [
+                                    'total' => (int) ($row->total ?? 0),
+                                    'present' => (int) ($row->present ?? 0),
+                                    'absent' => (int) ($row->absent ?? 0),
+                                    'last_date' => $row->last_date ? Carbon::parse($row->last_date) : null,
+                                ],
+                            ];
+                        })
+                );
 
             $billingByStudent = $children->mapWithKeys(function (Student $student) use ($year, $month, $today) {
                 $daysInMonth = Carbon::create($year, $month, 1)->daysInMonth;

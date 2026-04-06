@@ -5,24 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Notice;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 
 class NoticeController extends Controller
 {
-    private function ensureNoticesTableExists(): void
-    {
-        if (! Schema::hasTable('notices')) {
-            abort(503, "Tabela 'notices' não encontrada. Rode: php artisan migrate");
-        }
-    }
-
     public function index(Request $request)
     {
-        if (! $request->user()->isAdmin()) {
-            abort(403);
-        }
-
-        $this->ensureNoticesTableExists();
+        $this->authorize('viewAny', Notice::class);
 
         $notices = Notice::query()
             ->with('author')
@@ -38,11 +26,7 @@ class NoticeController extends Controller
 
     public function store(Request $request)
     {
-        if (! $request->user()->isAdmin()) {
-            abort(403);
-        }
-
-        $this->ensureNoticesTableExists();
+        $this->authorize('create', Notice::class);
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -72,11 +56,7 @@ class NoticeController extends Controller
 
     public function edit(Request $request, Notice $notice)
     {
-        if (! $request->user()->isAdmin()) {
-            abort(403);
-        }
-
-        $this->ensureNoticesTableExists();
+        $this->authorize('update', $notice);
 
         return view('admin.notices.edit', [
             'notice' => $notice,
@@ -85,11 +65,7 @@ class NoticeController extends Controller
 
     public function update(Request $request, Notice $notice)
     {
-        if (! $request->user()->isAdmin()) {
-            abort(403);
-        }
-
-        $this->ensureNoticesTableExists();
+        $this->authorize('update', $notice);
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -116,11 +92,7 @@ class NoticeController extends Controller
 
     public function destroy(Request $request, Notice $notice)
     {
-        if (! $request->user()->isAdmin()) {
-            abort(403);
-        }
-
-        $this->ensureNoticesTableExists();
+        $this->authorize('delete', $notice);
 
         $notice->delete();
 

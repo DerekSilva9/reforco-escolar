@@ -47,4 +47,17 @@ class TeamPolicy
     {
         return $user->isAdmin();
     }
+
+    public function save(User $user, Team $team): bool
+    {
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        if ($user->isProfessor()) {
+            return $team->user_id === $user->id;
+        }
+
+        return false;
+    }
 }

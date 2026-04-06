@@ -35,7 +35,7 @@
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-white/80 dark:bg-slate-800/80 backdrop-blur shadow-sm border-b border-blue-100 dark:border-slate-700">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-7xl mx-auto py-4 md:py-6 lg:py-6 px-3 md:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
@@ -44,9 +44,9 @@
             <!-- Page Content -->
             <main>
                 @if (session('success'))
-                    <div class="py-4">
-                        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                            <div class="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 px-4 py-3 rounded-md shadow-sm">
+                    <div class="py-3 md:py-4">
+                        <div class="max-w-7xl mx-auto px-3 md:px-6 lg:px-8">
+                            <div class="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 px-3 md:px-4 py-2 md:py-3 rounded-md shadow-sm text-sm md:text-base">
                                 {{ session('success') }}
                             </div>
                         </div>
@@ -54,9 +54,9 @@
                 @endif
 
                 @if (session('error'))
-                    <div class="py-4">
-                        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                            <div class="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-200 px-4 py-3 rounded-md shadow-sm">
+                    <div class="py-3 md:py-4">
+                        <div class="max-w-7xl mx-auto px-3 md:px-6 lg:px-8">
+                            <div class="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-200 px-3 md:px-4 py-2 md:py-3 rounded-md shadow-sm text-sm md:text-base">
                                 {{ session('error') }}
                             </div>
                         </div>

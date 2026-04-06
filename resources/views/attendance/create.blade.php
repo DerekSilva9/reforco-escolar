@@ -16,8 +16,8 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-6 md:py-8 lg:py-12">
+        <div class="max-w-5xl mx-auto px-3 md:px-6 lg:px-8 space-y-4 md:space-y-6">
             <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg border border-slate-200 dark:border-slate-700">
                 <div class="p-6 text-gray-900 dark:text-slate-50">
                     <form method="GET" action="{{ route('teams.attendance.create', $team) }}" class="flex flex-wrap items-end gap-3">

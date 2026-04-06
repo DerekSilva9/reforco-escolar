@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,5 +43,16 @@ class Student extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Eager load common relationships to prevent N+1 queries
+     */
+    public function scopeWithCommonRelations(Builder $query): Builder
+    {
+        return $query->with([
+            'team:id,name,time,user_id',
+            'responsavel:id,name,phone',
+        ]);
     }
 }

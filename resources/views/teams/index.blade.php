@@ -20,7 +20,7 @@
         </div>
     </x-slot>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8">
         @if ($teams->isEmpty())
             <div class="bg-white dark:bg-slate-800 rounded-2xl p-16 text-center shadow-md border border-slate-300 dark:border-slate-700">
                 <svg class="w-20 h-20 text-slate-300 dark:text-slate-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
