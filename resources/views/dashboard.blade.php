@@ -21,7 +21,7 @@
         </div>
     </x-slot>
 
-    <div class="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 md:py-6 lg:py-8">
         @php $modeValue = $mode ?? 'admin'; @endphp
         @php $noticeList = $notices ?? collect(); @endphp
 
@@ -359,49 +359,120 @@
             </div>
             @endif
             @elseif($modeValue === 'responsavel')
+            @php $alertsList = $alerts ?? collect(); @endphp
+            
+            {{-- INTELLIGENT ALERTS SECTION --}}
+            @if($alertsList->isNotEmpty())
+                <div class="mb-6 sm:mb-8 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-rose-400 to-rose-600 dark:from-rose-500 dark:to-rose-700 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg">
+                            {{ $alertsList->count() }}
+                        </div>
+                        <h2 class="text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">
+                            {{ $alertsList->count() === 1 ? '1 Alerta' : $alertsList->count() . ' Alertas' }}
+                        </h2>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        @foreach($alertsList as $alert)
+                            @php
+                                $isWarning = $alert['severity'] === 'warning';
+                                $isCritical = $alert['severity'] === 'critical';
+                                $isInfo = $alert['severity'] === 'info';
+                                
+                                $bgColor = $isCritical ? 'bg-rose-50 dark:bg-rose-950/20' : ($isWarning ? 'bg-amber-50 dark:bg-amber-950/20' : 'bg-cyan-50 dark:bg-cyan-950/20');
+                                $borderColor = $isCritical ? 'border-rose-300 dark:border-rose-700' : ($isWarning ? 'border-amber-300 dark:border-amber-700' : 'border-cyan-300 dark:border-cyan-700');
+                                $borderLeftColor = $isCritical ? 'border-l-rose-500' : ($isWarning ? 'border-l-amber-500' : 'border-l-cyan-500');
+                                $textColor = $isCritical ? 'text-rose-900 dark:text-rose-100' : ($isWarning ? 'text-amber-900 dark:text-amber-100' : 'text-cyan-900 dark:text-cyan-100');
+                                $titleColor = $isCritical ? 'text-rose-700 dark:text-rose-300' : ($isWarning ? 'text-amber-700 dark:text-amber-300' : 'text-cyan-700 dark:text-cyan-300');
+                                $badgeBg = $isCritical ? 'bg-rose-100 dark:bg-rose-900/60' : ($isWarning ? 'bg-amber-100 dark:bg-amber-900/60' : 'bg-cyan-100 dark:bg-cyan-900/60');
+                                $badgeText = $isCritical ? 'text-rose-700 dark:text-rose-300' : ($isWarning ? 'text-amber-700 dark:text-amber-300' : 'text-cyan-700 dark:text-cyan-300');
+                            @endphp
+                            
+                            <div class="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 md:p-5 rounded-2xl border-l-4 {{ $borderLeftColor }} {{ $bgColor }} border {{ $borderColor }} shadow-sm hover:shadow-md transition-all duration-200">
+                                <div class="flex-shrink-0 text-xl sm:text-2xl mt-0.5">{{ $alert['icon'] }}</div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-start justify-between gap-2 sm:gap-3 flex-col sm:flex-row sm:items-center">
+                                        <div class="flex-1 min-w-0">
+                                            <h3 class="font-bold {{ $titleColor }} text-xs sm:text-sm md:text-base">{{ $alert['title'] }}</h3>
+                                            <p class="text-[11px] sm:text-xs md:text-sm {{ $textColor }} mt-1 leading-relaxed">{{ $alert['message'] }}</p>
+                                            @if($isCritical && isset($alert['daysOverdue']))
+                                                <p class="text-[10px] sm:text-xs {{ $textColor }} opacity-75 mt-1.5 sm:mt-2 font-semibold">
+                                                    Vencimento: {{ $alert['due_date']->format('d \d\e F') }} 
+                                                    <span class="font-bold text-rose-700 dark:text-rose-300">({{ $alert['daysOverdue'] }}d)</span>
+                                                </p>
+                                            @elseif($isWarning && isset($alert['total']))
+                                                <p class="text-[10px] sm:text-xs {{ $textColor }} opacity-75 mt-1.5 sm:mt-2 font-semibold">
+                                                    Presença: {{ round(((($alert['total'] ?? 0) - ($alert['absences'] ?? 0)) / ($alert['total'] ?? 1)) * 100, 0) }}% • {{ $alert['absences'] }} faltas em {{ $alert['total'] }} aulas
+                                                </p>
+                                            @endif
+                                        </div>
+                                        @if($isCritical)
+                                            <a href="{{ route('financeiro.index') }}" 
+                                               class="flex-shrink-0 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg {{ $badgeBg }} {{ $badgeText }} font-bold text-[10px] sm:text-xs hover:scale-105 active:scale-95 transition-transform hover:shadow-lg whitespace-nowrap">
+                                                Pagar
+                                            </a>
+                                        @else
+                                            <span class="flex-shrink-0 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg {{ $badgeBg }} {{ $badgeText }} font-bold text-[10px] sm:text-xs whitespace-nowrap">
+                                                {{$isWarning ? '⚠️' : '🔔'}}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+            
             <div x-data="{ tab: (localStorage.getItem('resp_dash_tab') || 'resumo') }"
                  x-init="$watch('tab', value => localStorage.setItem('resp_dash_tab', value))"
-                 class="space-y-8">
-                <div class="inline-flex rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1 shadow-sm w-full md:w-auto">
+                 class="space-y-6 sm:space-y-8">
+                <div class="inline-flex rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1 shadow-sm w-full md:w-auto gap-0.5 sm:gap-1">
                     <button type="button"
                             @click="tab = 'resumo'"
                             :class="tab === 'resumo' ? 'bg-slate-900 dark:bg-slate-700 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'"
-                            class="flex-1 md:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-colors">
+                            class="flex-1 md:flex-none px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-colors relative">
                         Resumo
+                        @if($alertsList->isNotEmpty())
+                            <span class="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 text-[9px] sm:text-xs font-bold rounded-full bg-rose-500 text-white">
+                                {{ min($alertsList->count(), 9) }}{{ $alertsList->count() > 9 ? '+' : '' }}
+                            </span>
+                        @endif
                     </button>
                     <button type="button"
                             @click="tab = 'desempenho'"
                             :class="tab === 'desempenho' ? 'bg-slate-900 dark:bg-slate-700 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'"
-                            class="flex-1 md:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-colors">
+                            class="flex-1 md:flex-none px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-colors">
                         Desempenho
                     </button>
                     <button type="button"
                             @click="tab = 'observacoes'"
                             :class="tab === 'observacoes' ? 'bg-slate-900 dark:bg-slate-700 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'"
-                            class="flex-1 md:flex-none px-4 py-2 rounded-xl text-sm font-bold transition-colors">
+                            class="flex-1 md:flex-none px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-colors">
                         Observações
                     </button>
                 </div>
 
-                <div x-show="tab === 'resumo'" class="space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-md border border-slate-300 dark:border-slate-700">
-                        <p class="text-[11px] font-bold text-slate-400 dark:text-slate-300 uppercase tracking-widest">Alunos Vinculados</p>
+                <div x-show="tab === 'resumo'" class="space-y-6 sm:space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-md border border-slate-300 dark:border-slate-700">
+                        <p class="text-[9px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-300 uppercase tracking-widest">Alunos</p>
                         <div class="flex items-end justify-between mt-2">
-                            <h2 class="text-4xl font-bold text-slate-900 dark:text-slate-50">{{ $children->count() }}</h2>
-                            <span class="text-[10px] font-bold text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md border border-blue-100 dark:border-blue-800 uppercase">Dependentes</span>
+                            <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50">{{ $children->count() }}</h2>
+                            <span class="text-[8px] sm:text-[10px] font-bold text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md border border-blue-100 dark:border-blue-800 uppercase">Link.</span>
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-md border border-slate-300 dark:border-slate-700">
-                        <p class="text-[11px] font-bold text-amber-600/80 dark:text-amber-400/80 uppercase tracking-widest">Mensalidades (Mês)</p>
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-md border border-slate-300 dark:border-slate-700">
+                        <p class="text-[9px] sm:text-[11px] font-bold text-amber-600/80 dark:text-amber-400/80 uppercase tracking-widest">Mensalidades</p>
                         <div class="flex items-end justify-between mt-2">
-                            <div class="space-y-1">
-                                <div class="text-sm font-bold text-slate-900 dark:text-slate-50">
-                                    {{ ($paymentsCounts['pendentes'] ?? 0) + ($paymentsCounts['atrasados'] ?? 0) }} pendente(s)
+                            <div class="space-y-0.5 sm:space-y-1">
+                                <div class="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-50">
+                                    {{ ($paymentsCounts['pendentes'] ?? 0) + ($paymentsCounts['atrasados'] ?? 0) }}
                                 </div>
-                                <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                                    {{ $paymentsCounts['atrasados'] ?? 0 }} atrasada(s) • {{ $paymentsCounts['pagos'] ?? 0 }} paga(s)
+                                <div class="text-[9px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                    {{ $paymentsCounts['atrasados'] ?? 0 }}⏰ • {{ $paymentsCounts['pagos'] ?? 0 }}✅
                                 </div>
                             </div>
                             <div class="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg text-amber-600 dark:text-amber-400">
@@ -410,12 +481,12 @@
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-md border border-slate-300 dark:border-slate-700">
-                        <p class="text-[11px] font-bold text-emerald-600/80 dark:text-emerald-400/80 uppercase tracking-widest">Presença (Mês)</p>
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-md border border-slate-300 dark:border-slate-700">
+                        <p class="text-[9px] sm:text-[11px] font-bold text-emerald-600/80 dark:text-emerald-400/80 uppercase tracking-widest">Presença</p>
                         <div class="flex items-end justify-between mt-2">
                             <div>
-                                <div class="text-4xl font-bold text-slate-900 dark:text-slate-50">{{ number_format($overallAttendanceRate ?? 0, 1, ',', '.') }}%</div>
-                                <div class="text-[10px] font-bold text-slate-400 dark:text-slate-300 uppercase tracking-widest mt-1">média geral</div>
+                                <div class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50">{{ number_format($overallAttendanceRate ?? 0, 1, ',', '.') }}%</div>
+                                <div class="text-[8px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-300 uppercase tracking-widest mt-1">média</div>
                             </div>
                             <div class="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg text-emerald-600 dark:text-emerald-400">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
@@ -442,27 +513,26 @@
                         @endphp
 
                         <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-                            <div class="p-6 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h2 class="text-lg font-bold text-slate-900 dark:text-slate-50">{{ $student->name }}</h2>
-                                        <p class="text-xs text-slate-500 font-medium">
-                                            Turma: {{ $student->team->name }} • {{ $student->team->time }}
-                                            @if($startTime && $endTime)
-                                                • {{ $startTime }}–{{ $endTime }}
-                                            @endif
+                            <div class="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-50 truncate">{{ $student->name }}</h2>
+                                        <p class="text-[10px] sm:text-xs text-slate-500 font-medium truncate">
+                                            {{ $student->team->name }} • {{ $student->team->time }}
                                         </p>
-                                        <p class="text-xs text-slate-500 font-medium mt-1">
-                                            Professor(a): {{ $student->team->teacher?->name ?? '-' }}{{ $student->team->teacher?->phone ? ' • '.$student->team->teacher->phone : '' }}
-                                        </p>
+                                        @if($startTime && $endTime)
+                                            <p class="text-[10px] sm:text-xs text-slate-500 font-medium">
+                                                {{ $startTime }}–{{ $endTime }}
+                                            </p>
+                                        @endif
                                     </div>
-                                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl flex items-center justify-center font-bold text-xl">
+                                    <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl flex items-center justify-center font-bold text-lg sm:text-xl">
                                         {{ substr($student->name, 0, 1) }}
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="p-6 space-y-6">
+                            <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
                                 @php
                                     $billingBoxClasses = match ($billingStatus) {
                                         'pago' => 'bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800',
@@ -489,11 +559,11 @@
                                     };
                                 @endphp
 
-                                <div class="flex items-center justify-between p-4 rounded-2xl {{ $billingBoxClasses }}">
-                                    <div>
-                                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Mensalidade de {{ now()->translatedFormat('F') }}</p>
-                                        <p class="text-sm font-bold {{ $billingTextClasses }}">{{ $billingLabel }}</p>
-                                        <p class="text-xs text-slate-500 font-medium mt-1">
+                                <div class="flex items-center justify-between p-3 sm:p-4 rounded-2xl {{ $billingBoxClasses }}">
+                                    <div class="min-w-0">
+                                        <p class="text-[8px] sm:text-[10px] uppercase tracking-wider font-bold text-slate-400">Mensalidade</p>
+                                        <p class="text-xs sm:text-sm font-bold {{ $billingTextClasses }}">{{ $billingLabel }}</p>
+                                        <p class="text-[10px] sm:text-xs text-slate-500 font-medium mt-0.5 sm:mt-1 truncate">
                                             Valor: R$ {{ number_format($billingAmount, 2, ',', '.') }}
                                             @if($billingStatus === 'pago' && $billingPaidAt)
                                                 • Pago em {{ $billingPaidAt->format('d/m') }}
@@ -508,19 +578,19 @@
                                     <span class="text-lg">{{ $billingIcon }}</span>
                                 </div>
 
-                                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Presença no mês</p>
+                                <div class="p-3 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
+                                    <div class="flex items-center justify-between gap-3">
+                                        <div class="min-w-0">
+                                            <p class="text-[8px] sm:text-[10px] uppercase tracking-wider font-bold text-slate-400">Presença no mês</p>
                                             @if($monthRate !== null)
-                                                <p class="text-sm font-bold text-slate-900 dark:text-slate-50">{{ number_format($monthRate, 1, ',', '.') }}%</p>
-                                                <p class="text-xs text-slate-500 font-medium mt-1">{{ $stats['present'] }} / {{ $stats['total'] }} presenças • {{ $stats['absent'] }} faltas</p>
+                                                <p class="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-50">{{ number_format($monthRate, 1, ',', '.') }}%</p>
+                                                <p class="text-[9px] sm:text-xs text-slate-500 font-medium mt-0.5 sm:mt-1">{{ $stats['present'] }}/{{ $stats['total'] }} • {{ $stats['absent'] }} faltas</p>
                                             @else
-                                                <p class="text-sm font-bold text-slate-600 dark:text-slate-300">Sem aulas registradas</p>
+                                                <p class="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300">Sem aulas</p>
                                             @endif
                                         </div>
                                         @if($monthRate !== null)
-                                            <div class="w-24">
+                                            <div class="flex-shrink-0 w-16 sm:w-24">
                                                 <div class="h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                                                     <div class="h-2 bg-emerald-500" style="width: {{ min(100, max(0, $monthRate)) }}%"></div>
                                                 </div>
@@ -531,23 +601,23 @@
                                 </div>
 
                                 <div>
-                                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Últimas Presenças</h3>
-                                    <div class="space-y-3">
+                                    <h3 class="text-[9px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 sm:mb-4">Últimas Presenças</h3>
+                                    <div class="space-y-2 sm:space-y-3">
                                         @forelse($student->attendances->take(5) as $attendance)
-                                            <div class="flex items-center justify-between text-sm">
-                                                <span class="text-slate-600 dark:text-slate-400 font-medium">{{ $attendance->date->format('d/m/Y') }}</span>
+                                            <div class="flex items-center justify-between text-xs sm:text-sm">
+                                                <span class="text-slate-600 dark:text-slate-400 font-medium">{{ $attendance->date->format('d/m') }}</span>
                                                 @if($attendance->present)
-                                                    <span class="flex items-center gap-1.5 text-emerald-600 font-bold text-xs uppercase">
-                                                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Presente
+                                                    <span class="flex items-center gap-1 text-emerald-600 font-bold text-[9px] sm:text-xs uppercase">
+                                                        <span class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-emerald-500 rounded-full"></span> Presente
                                                     </span>
                                                 @else
-                                                    <span class="flex items-center gap-1.5 text-rose-600 font-bold text-xs uppercase">
-                                                        <span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span> Ausente
+                                                    <span class="flex items-center gap-1 text-rose-600 font-bold text-[9px] sm:text-xs uppercase">
+                                                        <span class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-rose-500 rounded-full"></span> Ausente
                                                     </span>
                                                 @endif
                                             </div>
                                             @if($attendance->obs)
-                                                <p class="text-[11px] text-slate-500 italic mt-1 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border-l-2 border-slate-200">
+                                                <p class="text-[9px] sm:text-[10px] text-slate-500 italic mt-0.5 sm:mt-1 bg-slate-50 dark:bg-slate-900/50 p-1.5 sm:p-2 rounded-lg border-l-2 border-slate-200 truncate">
                                                     "{{ $attendance->obs }}"
                                                 </p>
                                             @endif

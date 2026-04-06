@@ -125,28 +125,49 @@ class DashboardController extends Controller
             $monthEnd = $now->copy()->endOfMonth();
 
             $childIds = $children->pluck('id');
-            $attendanceStatsByStudent = $childIds->isEmpty()
-                ? collect()
-                : Cache::remember(
+            
+            // Cache as array to avoid serialization issues with Carbon objects
+            $attendanceStatsArray = [];
+            if (!$childIds->isEmpty()) {
+                $result = Cache::remember(
                     "$responsavelCacheKey.attendance_stats",
                     $responsavelCacheTtl,
-                    fn () => Attendance::query()
-                        ->whereIn('student_id', $childIds)
-                        ->whereBetween('date', [$monthStart->toDateString(), $monthEnd->toDateString()])
-                        ->selectRaw('student_id, COUNT(*) as total, SUM(CASE WHEN present = 1 THEN 1 ELSE 0 END) as present, SUM(CASE WHEN present = 0 THEN 1 ELSE 0 END) as absent, MAX(date) as last_date')
-                        ->groupBy('student_id')
-                        ->get()
-                        ->mapWithKeys(function ($row) {
-                            return [
-                                (int) $row->student_id => [
-                                    'total' => (int) ($row->total ?? 0),
-                                    'present' => (int) ($row->present ?? 0),
-                                    'absent' => (int) ($row->absent ?? 0),
-                                    'last_date' => $row->last_date ? Carbon::parse($row->last_date) : null,
-                                ],
-                            ];
-                        })
+                    function () use ($childIds, $monthStart, $monthEnd) {
+                        return Attendance::query()
+                            ->whereIn('student_id', $childIds->toArray())
+                            ->whereBetween('date', [$monthStart->toDateString(), $monthEnd->toDateString()])
+                            ->selectRaw('student_id, COUNT(*) as total, SUM(CASE WHEN present = 1 THEN 1 ELSE 0 END) as present, SUM(CASE WHEN present = 0 THEN 1 ELSE 0 END) as absent, MAX(date) as last_date')
+                            ->groupBy('student_id')
+                            ->get()
+                            ->mapWithKeys(function ($row) {
+                                return [
+                                    (int) $row->student_id => [
+                                        'total' => (int) ($row->total ?? 0),
+                                        'present' => (int) ($row->present ?? 0),
+                                        'absent' => (int) ($row->absent ?? 0),
+                                        'last_date' => $row->last_date,
+                                    ],
+                                ];
+                            })
+                            ->toArray();
+                    }
                 );
+                // Ensure result is always an array
+                $attendanceStatsArray = is_array($result) ? $result : [];
+            }
+            
+            // Convert back with Carbon instances
+            $attendanceStatsByStudent = collect();
+            foreach ($attendanceStatsArray as $studentId => $stats) {
+                if (is_array($stats)) {
+                    $attendanceStatsByStudent[$studentId] = [
+                        'total' => $stats['total'] ?? 0,
+                        'present' => $stats['present'] ?? 0,
+                        'absent' => $stats['absent'] ?? 0,
+                        'last_date' => isset($stats['last_date']) && $stats['last_date'] ? Carbon::parse($stats['last_date']) : null,
+                    ];
+                }
+            }
 
             $billingByStudent = $children->mapWithKeys(function (Student $student) use ($year, $month, $today) {
                 $daysInMonth = Carbon::create($year, $month, 1)->daysInMonth;
@@ -191,6 +212,79 @@ class DashboardController extends Controller
                 ? round(($attendanceTotals['present'] / $attendanceTotals['total']) * 100, 1)
                 : 0.0;
 
+            // Generate intelligent alerts
+            $alerts = collect();
+            
+            foreach ($children as $student) {
+                $billing = $billingByStudent[$student->id] ?? null;
+                $stats = $attendanceStatsByStudent[$student->id] ?? ['total' => 0, 'present' => 0, 'absent' => 0, 'last_date' => null];
+                
+                // Alert: Pagamento atrasado há mais de 7 dias
+                if ($billing && $billing['status'] === 'atrasado') {
+                    $daysOverdue = now()->diffInDays($billing['due_date']);
+                    if ($daysOverdue > 7) {
+                        $alerts->push([
+                            'type' => 'payment_overdue',
+                            'severity' => 'critical',
+                            'icon' => '⚠️',
+                            'title' => 'Mensalidade muito atrasada',
+                            'message' => "{$student->name}: Pagamento em atraso há {$daysOverdue} dias",
+                            'student_id' => $student->id,
+                            'student_name' => $student->name,
+                            'due_date' => $billing['due_date'],
+                            'daysOverdue' => $daysOverdue,
+                        ]);
+                    }
+                }
+                
+                // Alert: Múltiplas faltas consecutivas (3+ dias sem aparecer)
+                if ($stats['absent'] >= 3) {
+                    if ($stats['total'] > 0) {
+                        $absenceRate = round(($stats['absent'] / $stats['total']) * 100, 1);
+                        if ($absenceRate >= 30) {
+                            $alerts->push([
+                                'type' => 'high_absence',
+                                'severity' => 'warning',
+                                'icon' => '📊',
+                                'title' => 'Taxa de presença baixa',
+                                'message' => "{$student->name}: {$stats['absent']} faltas em {$stats['total']} aulas ({$absenceRate}%)",
+                                'student_id' => $student->id,
+                                'student_name' => $student->name,
+                                'absences' => $stats['absent'],
+                                'total' => $stats['total'],
+                            ]);
+                        }
+                    }
+                }
+                
+                // Alert: Primeira falta do mês (today is the first absence day)
+                // Attendances are already loaded via with(), use collection methods
+                $recentAbsences = $student->attendances
+                    ->filter(fn ($att) => $att->present === false)
+                    ->sortByDesc('date')
+                    ->take(5);
+                
+                if ($recentAbsences->isNotEmpty()) {
+                    $lastAbsence = $recentAbsences->first();
+                    if ($lastAbsence->date->isToday()) {
+                        $alerts->push([
+                            'type' => 'first_absence',
+                            'severity' => 'info',
+                            'icon' => '🔔',
+                            'title' => 'Ausência registrada',
+                            'message' => "{$student->name} não compareceu hoje",
+                            'student_id' => $student->id,
+                            'student_name' => $student->name,
+                            'date' => $lastAbsence->date,
+                        ]);
+                    }
+                }
+            }
+            
+            // Sort alerts by severity (critical > warning > info)
+            $severityOrder = ['critical' => 0, 'warning' => 1, 'info' => 2];
+            $alerts = $alerts->sortBy(fn ($alert) => $severityOrder[$alert['severity']] ?? 999)->values();
+
             return view('dashboard', [
                 'mode' => 'responsavel',
                 'children' => $children,
@@ -199,6 +293,7 @@ class DashboardController extends Controller
                 'paymentsCounts' => $paymentsCounts,
                 'overallAttendanceRate' => $overallAttendanceRate,
                 'notices' => $notices,
+                'alerts' => $alerts,
             ]);
         }
 
