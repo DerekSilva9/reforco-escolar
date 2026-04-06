@@ -6,7 +6,7 @@
                     <span class="w-2 h-6 bg-blue-600 rounded-full"></span>
                     Painel de Controle
                 </h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium ml-4">{{ now()->translatedFormat('l, d \d\e F') }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium ml-4">{{ now()->locale('pt_BR')->translatedFormat('l, d \d\e F') }}</p>
             </div>
             
             <a href="{{ route('profile.edit') }}" class="group flex items-center gap-3 p-1.5 pr-4 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-md transition-all">

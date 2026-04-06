@@ -135,10 +135,24 @@
                     @endif
 
                      @if (Auth::user()?->isAdmin())
-                         <a href="{{ route('financeiro.index') }}"
-                            class="nav-link-item {{ request()->routeIs('financeiro.*') ? 'active' : '' }}">
-                             Financeiro
-                         </a>
+                        <!-- Financeiro Dropdown -->
+                        <div class="relative group">
+                            <button class="nav-link-item group-hover:text-white group-hover:bg-blue-800/40 flex items-center gap-1.5">
+                                Financeiro
+                                <svg class="w-3.5 h-3.5 transition group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                                </svg>
+                            </button>
+                            <div class="absolute left-0 mt-0 w-48 rounded-lg bg-blue-900 border border-blue-800/50 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 py-2 z-50">
+                                <a href="{{ route('financeiro.index') }}" class="block px-4 py-2.5 text-sm text-blue-300 hover:bg-blue-800/60 hover:text-white transition-colors">
+                                    Lançamentos
+                                </a>
+                                <a href="{{ route('financeiro.executive') }}" class="block px-4 py-2.5 text-sm text-blue-300 hover:bg-blue-800/60 hover:text-white transition-colors">
+                                    Dashboard Executivo
+                                </a>
+                            </div>
+                        </div>
+                        
                         <a href="{{ route('admin.notices.index') }}"
                            class="nav-link-item {{ request()->routeIs('admin.notices.*') ? 'active' : '' }}">
                             Recados
@@ -226,7 +240,18 @@
             @endif
 
              @if (Auth::user()?->isAdmin())
-                 <a href="{{ route('financeiro.index') }}" class="resp-nav-link {{ request()->routeIs('financeiro.*') ? 'active' : '' }}">Financeiro</a>
+                 <div x-data="{ finOpen: false }">
+                     <button @click="finOpen = !finOpen" class="w-full text-left resp-nav-link flex items-center justify-between">
+                         <span>Financeiro</span>
+                         <svg class="w-4 h-4 transition" :class="{'rotate-180': finOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                         </svg>
+                     </button>
+                     <div x-show="finOpen" class="bg-blue-900/30 border-l-2 border-blue-700">
+                         <a href="{{ route('financeiro.index') }}" class="resp-nav-link pl-8 text-sm {{ request()->routeIs('financeiro.index') ? 'active' : '' }}">Lançamentos</a>
+                         <a href="{{ route('financeiro.executive') }}" class="resp-nav-link pl-8 text-sm {{ request()->routeIs('financeiro.executive') ? 'active' : '' }}">Dashboard Executivo</a>
+                     </div>
+                 </div>
                  <a href="{{ route('admin.notices.index') }}" class="resp-nav-link {{ request()->routeIs('admin.notices.*') ? 'active' : '' }}">Recados</a>
                  <a href="{{ route('admin.users.index') }}" class="resp-nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">Usuários</a>
              @endif

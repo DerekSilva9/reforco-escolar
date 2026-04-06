@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/financeiro', [FinanceController::class, 'index'])->name('financeiro.index');
     Route::post('/financeiro/{student}/pagar', [FinanceController::class, 'pay'])->name('financeiro.pay');
+    Route::get('/financeiro/executivo', [FinanceController::class, 'executive'])->name('financeiro.executive');
 
     Route::get('/admin/usuarios', [UserManagementController::class, 'index'])->name('admin.users.index');
     Route::get('/admin/usuarios/novo', [UserManagementController::class, 'create'])->name('admin.users.create');
