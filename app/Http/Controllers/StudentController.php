@@ -20,22 +20,41 @@ class StudentController extends Controller
         $teams = Team::query()
             ->when(! $user->isAdmin(), fn ($query) => $query->where('user_id', $user->id))
             ->orderBy('name')
-            ->select('id', 'name', 'time') // Selecionar apenas colunas necessárias
+            ->select('id', 'name', 'time')
             ->get();
+
+        // Get distinct school years for filter dropdown
+        $schoolYears = Student::query()
+            ->when(! $user->isAdmin(), fn ($query) => 
+                $query->whereHas('team', fn ($q) => $q->where('user_id', $user->id))
+            )
+            ->distinct()
+            ->pluck('school_year')
+            ->filter()
+            ->sort()
+            ->values();
 
         $students = Student::query()
             ->select('id', 'name', 'team_id', 'responsavel_id', 'school_year', 'phone', 'fee', 'active', 'parent_name', 'birth_date')
             ->withCommonRelations()
             ->when(! $user->isAdmin(), fn ($query) => $query->whereHas('team', fn ($q) => $q->where('user_id', $user->id)))
             ->when($request->filled('team_id'), fn ($query) => $query->where('team_id', $request->integer('team_id')))
+            ->searchByName($request->input('search'))
+            ->filterByStatus($request->input('status'))
+            ->filterByYear($request->input('school_year'))
             ->orderBy('active', 'desc')
             ->orderBy('name')
-            ->paginate(15);
+            ->paginate(15)
+            ->appends($request->query());
 
         return view('students.index', [
             'students' => $students,
             'teams' => $teams,
+            'schoolYears' => $schoolYears,
             'selectedTeamId' => $request->filled('team_id') ? $request->integer('team_id') : null,
+            'searchQuery' => $request->input('search'),
+            'selectedStatus' => $request->input('status'),
+            'selectedYear' => $request->input('school_year'),
         ]);
     }
 

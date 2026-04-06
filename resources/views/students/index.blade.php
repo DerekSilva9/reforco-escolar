@@ -21,34 +21,103 @@
 
     <div class="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8">
         <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-700 mb-6">
-            <form method="GET" action="{{ route('alunos.index') }}" class="flex flex-wrap gap-3 items-end">
-                <div class="flex-1 min-w-xs">
-                    <label class="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Filtrar por Turma</label>
-                    <select name="team_id" class="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-500/30 transition bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 font-medium">
-                        <option value="">Todas as turmas</option>
-                        @foreach ($teams as $team)
-                            <option value="{{ $team->id }}" @selected((string) $selectedTeamId === (string) $team->id)>
-                                {{ $team->name }} ({{ $team->time }})
-                            </option>
-                        @endforeach
-                    </select>
+            <form method="GET" action="{{ route('alunos.index') }}" class="space-y-4">
+                <!-- Linha 1: Busca -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Buscar aluno ou responsável</label>
+                    <div class="flex gap-3">
+                        <input type="text" name="search" placeholder="Nome do aluno ou responsável..." 
+                               value="{{ $searchQuery }}"
+                               class="flex-1 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-500/30 transition bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50"
+                               id="search-input">
+                        <script>
+                            // Debounce search input - submit after 500ms of no typing
+                            document.getElementById('search-input').addEventListener('input', function(e) {
+                                clearTimeout(this.debounceTimer);
+                                this.debounceTimer = setTimeout(() => {
+                                    this.form.submit();
+                                }, 500);
+                            });
+                        </script>
+                    </div>
                 </div>
-                <button type="submit" class="px-6 py-2.5 bg-blue-600 dark:bg-blue-700 border border-blue-700 dark:border-blue-600 rounded-lg font-semibold text-white hover:bg-blue-700 dark:hover:bg-blue-600 transition">
-                    Filtrar
-                </button>
-                @if ($selectedTeamId)
-                    <a href="{{ route('alunos.index') }}" class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-semibold text-sm">← Limpar filtro</a>
-                @endif
-                @if ($students->isNotEmpty())
-                    <a href="{{ route('alunos.export', request()->query()) }}" class="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 dark:bg-emerald-700 border border-emerald-700 dark:border-emerald-600 rounded-lg font-semibold text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        Exportar para Excel
-                    </a>
-                @endif
+
+                <!-- Linha 2: Filtros -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 items-end">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Filtrar por Turma</label>
+                        <select name="team_id" onchange="this.form.submit()" class="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-500/30 transition bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 font-medium">
+                            <option value="">Todas as turmas</option>
+                            @foreach ($teams as $team)
+                                <option value="{{ $team->id }}" @selected((string) $selectedTeamId === (string) $team->id)>
+                                    {{ $team->name }} ({{ $team->time }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Status</label>
+                        <select name="status" onchange="this.form.submit()" class="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-500/30 transition bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 font-medium">
+                            <option value="">Todos</option>
+                            <option value="ativo" @selected($selectedStatus === 'ativo')>Ativos</option>
+                            <option value="inativo" @selected($selectedStatus === 'inativo')>Inativos</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Ano Escolar</label>
+                        <select name="school_year" onchange="this.form.submit()" class="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-500/30 transition bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 font-medium">
+                            <option value="">Todos</option>
+                            @foreach ($schoolYears as $year)
+                                <option value="{{ $year }}" @selected($selectedYear === $year)>{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="flex gap-2">
+                        @if ($selectedTeamId || $searchQuery || $selectedStatus || $selectedYear)
+                            <a href="{{ route('alunos.index') }}" class="flex-1 px-4 py-2.5 text-center bg-slate-400 dark:bg-slate-600 rounded-lg font-semibold text-white hover:bg-slate-500 dark:hover:bg-slate-500 transition text-sm">
+                                ✕ Limpar
+                            </a>
+                        @endif
+                        @if ($students->isNotEmpty())
+                            <a href="{{ route('alunos.export', request()->query()) }}" class="flex-1 px-4 py-2.5 bg-emerald-600 dark:bg-emerald-700 border border-emerald-700 dark:border-emerald-600 rounded-lg font-semibold text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 transition text-sm flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <span class="hidden sm:inline">Excel</span>
+                            </a>
+                        @endif
+                    </div>
+                </div>
             </form>
         </div>
+
+        {{-- Mostrar filtros ativos --}}
+        @if ($selectedTeamId || $searchQuery || $selectedStatus || $selectedYear)
+            <div class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
+                <p class="text-sm text-blue-900 dark:text-blue-200 font-medium">Filtros aplicados:</p>
+                <div class="mt-2 flex flex-wrap gap-2">
+                    @if ($searchQuery)
+                        <span class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-700 text-blue-700 dark:text-blue-100 rounded-full text-xs font-semibold">
+                            🔍 {{ $searchQuery }}
+                        </span>
+                    @endif
+                    @if ($selectedStatus)
+                        <span class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-700 text-blue-700 dark:text-blue-100 rounded-full text-xs font-semibold">
+                            {{ $selectedStatus === 'ativo' ? '✓ Ativos' : '✗ Inativos' }}
+                        </span>
+                    @endif
+                    @if ($selectedYear)
+                        <span class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-700 text-blue-700 dark:text-blue-100 rounded-full text-xs font-semibold">
+                            📅 {{ $selectedYear }}
+                        </span>
+                    @endif
+                </div>
+            </div>
+        @endif
+
 
         @if ($students->isEmpty())
             <div class="bg-white dark:bg-slate-800 rounded-xl p-16 text-center shadow-sm border border-slate-200 dark:border-slate-700">
@@ -69,7 +138,9 @@
                                 <th class="px-6 py-4 text-left text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">Ano Escolar</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">Responsável</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">Telefone</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">Mensalidade</th>
+                                @if (auth()->user()?->isAdmin())
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">Mensalidade</th>
+                                @endif
                                 <th class="px-6 py-4 text-left text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">Status</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">Ações</th>
                             </tr>
@@ -109,9 +180,11 @@
                                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
                                         {{ $student->responsavel?->phone ?? $student->phone ?? '-' }}
                                     </td>
-                                    <td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-slate-50">
-                                        R$ {{ number_format((float) $student->fee, 2, ',', '.') }}
-                                    </td>
+                                    @if (auth()->user()?->isAdmin())
+                                        <td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-slate-50">
+                                            R$ {{ number_format((float) $student->fee, 2, ',', '.') }}
+                                        </td>
+                                    @endif
                                     <td class="px-6 py-4 text-sm">
                                         @if ($student->active)
                                             <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-700 text-emerald-800 dark:text-emerald-50 border border-emerald-300 dark:border-emerald-600">

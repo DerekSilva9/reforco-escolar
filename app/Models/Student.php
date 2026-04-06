@@ -55,4 +55,46 @@ class Student extends Model
             'responsavel:id,name,phone',
         ]);
     }
+
+    /**
+     * Filter by student name or responsável name
+     */
+    public function scopeSearchByName(Builder $query, ?string $search): Builder
+    {
+        if (! filled($search)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($search) {
+            $q->where('students.name', 'like', "%{$search}%")
+                ->orWhere('parent_name', 'like', "%{$search}%")
+                ->orWhereHas('responsavel', fn ($subQuery) => 
+                    $subQuery->where('name', 'like', "%{$search}%")
+                );
+        });
+    }
+
+    /**
+     * Filter by status (active/inactive)
+     */
+    public function scopeFilterByStatus(Builder $query, ?string $status): Builder
+    {
+        if (! filled($status)) {
+            return $query;
+        }
+
+        return $query->where('active', $status === 'ativo');
+    }
+
+    /**
+     * Filter by school year
+     */
+    public function scopeFilterByYear(Builder $query, ?string $year): Builder
+    {
+        if (! filled($year)) {
+            return $query;
+        }
+
+        return $query->where('school_year', $year);
+    }
 }
