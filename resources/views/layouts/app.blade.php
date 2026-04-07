@@ -4,8 +4,22 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        
+        <!-- PWA Meta Tags -->
+        <meta name="theme-color" content="#0891b2">
+        <meta name="description" content="Area do Aluno - acompanhe presenca, mensalidades e comunicados da escola.">
+        <meta name="application-name" content="Jardim do Saber">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="Jardim do Saber">
+        <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+        <link rel="apple-touch-icon" href="/images/icon-192x192.png">
+        
+        <!-- Manifest -->
+        <link rel="manifest" href="/manifest.json">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'Jardim do Saber') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -66,5 +80,8 @@
                 {{ $slot }}
             </main>
         </div>
+        
+        <!-- PWA Service Worker Registration -->
+        <script src="/pwa-init.js" defer></script>
     </body>
 </html>

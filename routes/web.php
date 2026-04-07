@@ -14,6 +14,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// PWA Offline Page
+Route::get('/offline', function () {
+    return view('offline');
+})->name('offline');
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 

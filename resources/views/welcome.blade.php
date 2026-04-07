@@ -47,6 +47,18 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        
+        <!-- PWA Meta Tags -->
+        <meta name="theme-color" content="#0891b2">
+        <meta name="description" content="Area do Aluno - acompanhe presenca, mensalidades e comunicados da escola.">
+        <meta name="application-name" content="Jardim do Saber">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="Jardim do Saber">
+        <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+        <link rel="apple-touch-icon" href="/images/icon-192x192.png">
+        <link rel="manifest" href="/manifest.json">
 
         <title>{{ config('app.name', 'Jardim do Saber Profª Auri Mota') }}</title>
 
@@ -183,6 +195,14 @@
                                     Fale com a escola
                                     <span class="text-cyan-700">→</span>
                                 </a>
+
+                                <button type="button"
+                                        data-pwa-install
+                                        hidden
+                                        class="font-ui inline-flex items-center justify-center gap-2 rounded-lg border border-cyan-200 bg-cyan-50 px-5 py-3 text-sm font-semibold text-cyan-900 shadow-sm transition-colors hover:bg-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-700/25 focus:ring-offset-2 focus:ring-offset-[#FDFCF8]">
+                                    Instalar app
+                                    <span>+</span>
+                                </button>
                             </div>
 
                             <dl class="mt-8 grid gap-4 sm:grid-cols-3">
@@ -443,5 +463,8 @@
                 </div>
             </div>
         </footer>
+        
+        <!-- PWA Service Worker Registration -->
+        <script src="/pwa-init.js" defer></script>
     </body>
 </html>

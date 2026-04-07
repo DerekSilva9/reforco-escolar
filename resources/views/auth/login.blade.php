@@ -5,6 +5,13 @@
     <div class="mb-6">
         <h1 class="text-xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">Entrar</h1>
         <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">Acesse sua conta para acompanhar alunos, chamadas e recados.</p>
+        <button type="button"
+                data-pwa-install
+                hidden
+                class="mt-4 inline-flex items-center gap-2 rounded-lg border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-semibold text-cyan-900 transition-colors hover:bg-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-700/25 dark:border-cyan-800/50 dark:bg-cyan-950/40 dark:text-cyan-100 dark:hover:bg-cyan-950/60">
+            Instalar app
+            <span>+</span>
+        </button>
     </div>
 
     <form method="POST" action="{{ route('login') }}">
