@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+.env.local
+.env.*.local
+storage/logs
+storage/app
+bootstrap/cache
+vendor
+.git
+.gitignore
+tests
+database/factories
+database/seeders
+*.md
+.phpunit.result.cache
