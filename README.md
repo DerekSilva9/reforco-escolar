@@ -5,6 +5,12 @@
 
 Sistema robusto para gestão de centros de reforço escolar, focado em facilitar o dia a dia de administradores e professores. O sistema prioriza a **funcionalidade direta** e a **acessibilidade**, com uma interface limpa, fontes legíveis e botões de ação rápida.
 
+
+<img width="1469" height="952" alt="image" src="https://github.com/user-attachments/assets/0d85158e-e655-470a-a6a9-28314b832327" />
+
+<img width="1287" height="951" alt="image" src="https://github.com/user-attachments/assets/d6e1e1b1-1098-4aa1-a0de-242ebf7826cf" />
+
+
 ---
 
 ## 🚀 Funcionalidades Principais
