@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 echo "🚀 Starting Laravel application..."
 
@@ -13,19 +12,19 @@ if [ "$DB_CONNECTION" = "mysql" ]; then
     echo "✅ MySQL is ready!"
 fi
 
-# Run migrations
+# Run migrations (non-blocking)
 echo "🔄 Running migrations..."
-php artisan migrate --force
+php artisan migrate --force || echo "⚠️  Migrations failed (dependencies may not be ready yet)"
 
 # Create storage symlink if it doesn't exist
 echo "🔗 Creating storage symlink..."
 php artisan storage:link || true
 
-# Clear cache
+# Clear cache (non-blocking)
 echo "🧹 Clearing caches..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+php artisan config:cache || true
+php artisan route:cache || true
+php artisan view:cache || true
 
 echo "✅ Application ready!"
 

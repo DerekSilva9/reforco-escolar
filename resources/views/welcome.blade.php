@@ -9,20 +9,12 @@
     $ctaUrl = auth()->check() ? route('dashboard') : route('login');
     $ctaLabel = auth()->check() ? 'Acessar' : 'Acessar';
 
-    $schoolAddress = config('school.address');
-    $schoolWhatsapp = config('school.whatsapp');
-    $schoolEmail = config('school.email');
-    $schoolMapsUrl = config('school.maps_url');
+    $schoolAddress = config('school.address', 'Avenida Vingt Rosado - Portal Da Chapada, Apodi/RN');
+    $schoolWhatsapp = config('school.whatsapp', '(84) 99429-6814');
+    $schoolEmail = config('school.email', 'contato@suaescola.com.br');
 
-    $schoolAddress = filled($schoolAddress) ? $schoolAddress : 'Avenida Vingt Rosado - Portal Da Chapada, Apodi/RN';
-    $schoolWhatsapp = filled($schoolWhatsapp) ? $schoolWhatsapp : '(84) 99476-7155';
-    $schoolEmail = filled($schoolEmail) ? $schoolEmail : 'contato@suaescola.com.br';
-    $schoolMapsUrl = filled($schoolMapsUrl) ? $schoolMapsUrl : 'https://www.google.com/maps/place/R.+Vingt+Rosado,+1023,+Apodi+-+RN,+59700-000/@-5.6506121,-37.8020545,17z/data=!3m1!4b1!4m5!3m4!1s0x7baf778eb90fbcb:0x3c6e98d7665eaa78!8m2!3d-5.6506121!4d-37.8020545?entry=ttu&g_ep=EgoyMDI2MDMyMy4xIKXMDSoASAFQAw%3D%3D';
-
-    $schoolMapsEmbedUrl = null;
-    if (is_string($schoolMapsUrl) && preg_match('/@(-?\\d+(?:\\.\\d+)?),(-?\\d+(?:\\.\\d+)?)/', $schoolMapsUrl, $matches)) {
-        $schoolMapsEmbedUrl = 'https://www.google.com/maps?q='.$matches[1].','.$matches[2].'&z=17&output=embed';
-    }
+    $schoolMapsEmbedUrl = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3293.4181923687856!2d-37.80155089921288!3d-5.650245410503589!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7baf778eb90fbcb%3A0x3c6e98d7665eaa78!2sR.%20Vingt%20Rosado%2C%201023%2C%20Apodi%20-%20RN%2C%2059700-000!5e0!3m2!1spt-BR!2sbr!4v1784585018182!5m2!1spt-BR!2sbr';
+    $schoolMapsUrl = $schoolMapsEmbedUrl;
 
     $bannerImageCandidates = [
         'images/escola-banner.jpg',
@@ -39,8 +31,22 @@
         }
     }
     $bannerImageUrl ??= asset('images/escola-banner.jpg');
-@endphp
+    
+    $slideDefinitions = [
+        ['file' => 'images/escola-banner.jpeg', 'label' => 'Fachada', 'title' => 'Jardim do Saber', 'desc' => 'A entrada da escola com identidade acolhedora e um ambiente preparado para receber famílias com carinho.'],
+        ['file' => 'images/sala-aula.jpeg', 'label' => 'Sala de aula', 'title' => 'Aprendizagem com cuidado', 'desc' => 'Um ambiente de sala de aula organizado e acolhedor, preparado para o desenvolvimento afetivo e cognitivo das crianças.'],
+        ['file' => null, 'label' => 'Área Externa', 'title' => 'Área Externa', 'desc' => 'Espaços abertos e conexão com a natureza.'],
+    ];
 
+    $slides = [];
+    foreach ($slideDefinitions as $def) {
+        $imgUrl = null;
+        if (!empty($def['file']) && file_exists(public_path($def['file']))) {
+            $imgUrl = asset($def['file']);
+        }
+        $slides[] = array_merge($def, ['img_url' => $imgUrl]);
+    }
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
     <head>
@@ -131,13 +137,65 @@
             </div>
         </header>
 
-        <section aria-label="Banner da escola" class="border-b border-slate-900/10">
-            {{-- Coloque a foto do banner em: public/images/escola-banner.(jpg|jpeg|png|webp) --}}
-            <div class="relative h-56 w-full sm:h-80"
-                 role="img"
-                 aria-label="Foto da escola"
-                 style="background-image: linear-gradient(90deg, rgba(8,145,178,0.10), rgba(22,163,74,0.08)), url('{{ $bannerImageUrl }}'); background-size: cover; background-position: center 45%;">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/45 via-slate-950/10 to-transparent" aria-hidden="true"></div>
+        <section aria-label="Hero da escola" class="border-b border-slate-900/10">
+            <div class="group relative overflow-hidden">
+                <div id="heroCarousel" class="relative w-full overflow-hidden bg-slate-950/5">
+                    <div class="relative h-[520px] sm:h-[640px] w-full">
+                        <div class="absolute inset-0 bg-slate-300"></div>
+                        <div class="absolute inset-0 bg-gradient-to-b from-slate-950/10 via-transparent to-slate-950/10 pointer-events-none"></div>
+
+                        @foreach ($slides as $i => $slide)
+                            <div class="absolute inset-0 transition-opacity duration-700 ease-out {{ $i === 0 ? 'opacity-100' : 'opacity-0' }}" data-slide-index="{{ $i }}" aria-hidden="{{ $i === 0 ? 'false' : 'true' }}">
+                                @if ($slide['img_url'])
+                                    <img src="{{ $slide['img_url'] }}" alt="{{ $slide['label'] }}" class="absolute inset-0 h-full w-full object-cover" />
+                                @else
+                                    <div class="absolute inset-0 bg-slate-300"></div>
+                                @endif
+                                <div class="absolute inset-0 bg-slate-950/30"></div>
+                                <div class="relative flex h-full items-center justify-center px-6 py-8 text-center">
+                                    <div class="w-full max-w-4xl px-6 py-10 text-white sm:px-8 sm:py-14">
+                                        <p class="text-sm font-semibold uppercase tracking-[0.35em] text-cyan-100 sm:text-base">{{ $slide['label'] }}</p>
+                                        <h2 class="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">{{ $slide['title'] }}</h2>
+                                        <p class="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-white/90 sm:text-xl">{{ $slide['desc'] }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+
+...
+                        <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-100" data-slide-index="0" aria-hidden="false">
+                            <img src="{{ $bannerImageUrl }}" alt="Jardim do Saber" class="absolute inset-0 h-full w-full object-cover" />
+                            <div class="absolute inset-0 bg-slate-950/30"></div>
+                            <div class="relative flex h-full items-center justify-center px-6 py-8 text-center">
+                                <div class="w-full max-w-4xl px-6 py-10 text-white sm:px-8 sm:py-14">
+                                    <p class="text-sm font-semibold uppercase tracking-[0.35em] text-cyan-100 sm:text-base">Sala de aula</p>
+                                    <h2 class="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">Jardim do Saber</h2>
+                                    <p class="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-white/90 sm:text-xl">A entrada da escola com identidade acolhedora e um ambiente preparado para receber famílias com carinho.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="heroCarouselPrev" type="button" class="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/20 bg-slate-950/40 p-3 text-white opacity-0 shadow-sm transition-opacity duration-200 hover:bg-slate-950/60 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/60">
+                            <span class="sr-only">Slide anterior</span>
+                            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M15 18l-6-6 6-6" />
+                            </svg>
+                        </button>
+
+                        <button id="heroCarouselNext" type="button" class="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/20 bg-slate-950/40 p-3 text-white opacity-0 shadow-sm transition-opacity duration-200 hover:bg-slate-950/60 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/60">
+                            <span class="sr-only">Próximo slide</span>
+                            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </button>
+
+                        <div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+                            <button type="button" data-carousel-target="0" aria-label="Ir para slide 1" aria-current="true" class="h-2.5 w-2.5 rounded-full bg-white shadow-sm shadow-slate-950/10"></button>
+                            <button type="button" data-carousel-target="1" aria-label="Ir para slide 2" class="h-2.5 w-2.5 rounded-full bg-white/60 shadow-sm shadow-slate-950/10"></button>
+                            <button type="button" data-carousel-target="2" aria-label="Ir para slide 3" class="h-2.5 w-2.5 rounded-full bg-white/60 shadow-sm shadow-slate-950/10"></button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -145,31 +203,7 @@
             <section class="py-8 sm:py-12">
                 <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
                     <div class="overflow-hidden rounded-lg border border-slate-900/10 bg-white/70 shadow-sm">
-                        <div class="relative h-44 sm:h-60" role="img" aria-label="Imagem de destaque da escola (placeholder)">
-                            <div class="absolute inset-0 bg-gradient-to-r from-cyan-200 via-[#FDFCF8] to-emerald-200"></div>
-                            <div class="absolute inset-0 opacity-[0.35]" aria-hidden="true"
-                                 style="background-image: repeating-linear-gradient(45deg, rgba(8,145,178,0.06) 0px, rgba(8,145,178,0.06) 1px, transparent 1px, transparent 12px), radial-gradient(900px 420px at 10% 10%, rgba(22,163,74,0.20), transparent 60%);">
-                            </div>
-                            <svg viewBox="0 0 220 150"
-                                 class="pointer-events-none absolute -right-20 -top-14 h-44 w-72 text-emerald-700/25"
-                                 fill="none"
-                                 stroke="currentColor"
-                                 stroke-width="2"
-                                 stroke-linecap="round"
-                                 stroke-linejoin="round"
-                                 aria-hidden="true">
-                                <path d="M12 132 C 60 35, 135 170, 208 18" />
-                                <path d="M72 68 C 62 60, 62 48, 76 44 C 90 40, 96 54, 86 64 C 80 70, 78 70, 72 68 Z" fill="currentColor" stroke="none" />
-                                <path d="M116 44 C 106 36, 104 26, 118 22 C 132 18, 138 32, 128 40 C 122 46, 120 46, 116 44 Z" fill="currentColor" stroke="none" />
-                                <path d="M160 68 C 150 60, 150 48, 164 44 C 178 40, 184 54, 174 64 C 168 70, 166 70, 160 68 Z" fill="currentColor" stroke="none" />
-                            </svg>
-                            <div class="relative flex h-full items-end p-6 sm:p-10">
-                                <div class="max-w-md rounded-lg border border-white/20 bg-slate-950/70 px-4 py-3 text-white shadow-sm backdrop-blur">
-                                    <div class="font-ui text-xs font-semibold uppercase tracking-wider text-cyan-200">Acolhimento e descobertas</div>
-                                    <div class="mt-1 text-sm font-semibold">Brincar • Descobrir • Crescer</div>
-                                </div>
-                            </div>
-                        </div>
+            
 
                         <div class="bg-[#FDFCF8]/80 px-6 py-10 sm:px-10">
 
@@ -177,8 +211,8 @@
                                 Um jardim onde aprender floresce.
                             </h1>
 
-                            <p class="mt-4 max-w-2xl text-base leading-relaxed text-slate-700">
-                                Educação infantil com afeto, rotina e aprendizagem lúdica — para a criança se desenvolver com segurança e autonomia.
+                            <p class="mt-5 max-w-2xl text-xl leading-relaxed text-slate-700">
+                                Educação infantil com afeto, rotina e aprendizagem lúdica para a criança se desenvolver com segurança e autonomia.
                             </p>
 
                             <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -195,14 +229,6 @@
                                     Fale com a escola
                                     <span class="text-cyan-700">→</span>
                                 </a>
-
-                                <button type="button"
-                                        data-pwa-install
-                                        hidden
-                                        class="font-ui inline-flex items-center justify-center gap-2 rounded-lg border border-cyan-200 bg-cyan-50 px-5 py-3 text-sm font-semibold text-cyan-900 shadow-sm transition-colors hover:bg-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-700/25 focus:ring-offset-2 focus:ring-offset-[#FDFCF8]">
-                                    Instalar app
-                                    <span>+</span>
-                                </button>
                             </div>
 
                             <dl class="mt-8 grid gap-4 sm:grid-cols-3">
@@ -229,52 +255,52 @@
                     <h2 class="text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl font-title">
                         Diferenciais
                     </h2>
-                    <p class="mt-2 max-w-2xl text-sm leading-relaxed text-slate-700">
+                    <p class="mt-2 max-w-2xl text-lg leading-relaxed text-slate-700">
                         Acolhimento, rotina e comunicação com a família — para a criança aprender com leveza e propósito.
                     </p>
 
                     <div class="mt-8 grid gap-6 md:grid-cols-3">
                         <div class="rounded-lg border border-slate-900/10 border-t-4 border-t-cyan-700 bg-white/75 p-6 shadow-sm">
                             <div class="flex items-center gap-3">
-                                <div class="grid h-11 w-11 place-items-center rounded-lg border border-slate-900/10 bg-cyan-50">
-                                    <svg viewBox="0 0 24 24" class="h-5 w-5 text-cyan-900" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <div class="grid h-12 w-12 place-items-center rounded-lg border border-slate-900/10 bg-cyan-50">
+                                    <svg viewBox="0 0 24 24" class="h-6 w-6 text-cyan-900" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                         <path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Z" />
                                         <path d="M12 9.5a2.2 2.2 0 1 0 0 .1Z" />
                                     </svg>
                                 </div>
-                                <h3 class="text-base font-semibold text-slate-950 font-title">Espaço acolhedor</h3>
+                                <h3 class="text-lg font-semibold text-slate-950 font-title sm:text-xl">Espaço acolhedor</h3>
                             </div>
-                            <p class="mt-3 text-sm leading-relaxed text-slate-700">
+                            <p class="mt-4 text-base leading-relaxed text-slate-700 sm:text-lg">
                                 Um ambiente bonito e seguro, pensado para o bem-estar e para a autonomia da criança.
                             </p>
                         </div>
 
                         <div class="rounded-lg border border-slate-900/10 border-t-4 border-t-slate-950 bg-white/75 p-6 shadow-sm">
                             <div class="flex items-center gap-3">
-                                <div class="grid h-11 w-11 place-items-center rounded-lg border border-slate-900/10 bg-slate-50">
-                                    <svg viewBox="0 0 24 24" class="h-5 w-5 text-slate-900" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <div class="grid h-12 w-12 place-items-center rounded-lg border border-slate-900/10 bg-slate-50">
+                                    <svg viewBox="0 0 24 24" class="h-6 w-6 text-slate-900" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                         <path d="M7 3h10a2 2 0 0 1 2 2v16l-7-4-7 4V5a2 2 0 0 1 2-2z" />
                                         <path d="M9 7h6M9 10h6" />
                                     </svg>
                                 </div>
-                                <h3 class="text-base font-semibold text-slate-950 font-title">Comunicação com a família</h3>
+                                <h3 class="text-lg font-semibold text-slate-950 font-title sm:text-xl">Comunicação com a família</h3>
                             </div>
-                            <p class="mt-3 text-sm leading-relaxed text-slate-700">
+                            <p class="mt-4 text-base leading-relaxed text-slate-700 sm:text-lg">
                                 Recados, presença e observações em um só lugar, com clareza e linguagem simples.
                             </p>
                         </div>
 
                         <div class="rounded-lg border border-slate-900/10 border-t-4 border-t-emerald-700 bg-white/75 p-6 shadow-sm">
                             <div class="flex items-center gap-3">
-                                <div class="grid h-11 w-11 place-items-center rounded-lg border border-slate-900/10 bg-emerald-50">
-                                    <svg viewBox="0 0 24 24" class="h-5 w-5 text-emerald-800" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <div class="grid h-12 w-12 place-items-center rounded-lg border border-slate-900/10 bg-emerald-50">
+                                    <svg viewBox="0 0 24 24" class="h-6 w-6 text-emerald-800" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                         <path d="M12 8v4l3 3" />
                                         <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                     </svg>
                                 </div>
-                                <h3 class="text-base font-semibold text-slate-950 font-title">Rotina com leveza</h3>
+                                <h3 class="text-lg font-semibold text-slate-950 font-title sm:text-xl">Rotina com leveza</h3>
                             </div>
-                            <p class="mt-3 text-sm leading-relaxed text-slate-700">
+                            <p class="mt-4 text-base leading-relaxed text-slate-700 sm:text-lg">
                                 Previsibilidade e carinho para criar hábitos, vínculo e um aprender mais tranquilo.
                             </p>
                         </div>
@@ -351,11 +377,11 @@
                             </p>
 
                             @if ($schoolMapsEmbedUrl)
-                                <div class="mt-5 overflow-hidden rounded-lg border border-slate-900/10 bg-white">
+                                <div class="mt-5 overflow-hidden rounded-2xl border border-slate-900/10 bg-white shadow-[0_24px_48px_-24px_rgba(15,23,42,0.28)]">
                                     <iframe
                                         title="Mapa de localização"
                                         src="{{ $schoolMapsEmbedUrl }}"
-                                        class="h-64 w-full"
+                                        class="h-75 w-full"
                                         loading="lazy"
                                         referrerpolicy="no-referrer-when-downgrade"></iframe>
                                 </div>
